@@ -1,10 +1,11 @@
 $label-color: #333;
 $control-color: #333;
-$normal-padding: 15px;
 $normal-border: #ccc;
-$normal-fontSize: 16px;
-$normal-borderRadius: 0.25rem;
 $normal-borderEntire: 1px solid #ced4da;
+$normal-borderRadius: 0.25rem;
+$normal-fontSize: 16px;
+$normal-height: 38px;
+$normal-padding: 15px;
 /* Styles */
 body {
   color: #4d4d4d;
@@ -39,6 +40,21 @@ body {
 .formControl {
   color: $control-color;
 }
+.formNumberControl {
+  height: $normal-height;
+  width: 100%;
+  .rc-input-number-handler {
+    height: 19px;
+    line-height: 19px;
+  }
+  input {
+    color: $control-color;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 6px;
+    text-align: left;
+  }
+}
 .react-datepicker-wrapper {
   width: 100%;
   .react-datepicker__input-container {
@@ -48,7 +64,7 @@ body {
 .formatDateControl {
   border: $normal-borderEntire;
   border-radius: $normal-borderRadius;
-  height: 38px;
+  height: $normal-height;
   padding: 6px;
   width: 100%;
 }

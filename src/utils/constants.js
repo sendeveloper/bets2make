@@ -70,3 +70,27 @@ export const START_DATE = {
   type: 'date',
   data: {}
 };
+
+export const END_DATE = {
+  title: 'EndDate',
+  type: 'date',
+  data: {}
+};
+
+export const NUMBER_RULE_MIN = {
+  title: 'Number of Rules(Min):',
+  type: 'number',
+  data: {
+    max: 5,
+    min: 1
+  }
+};
+
+export const NUMBER_RULE_MAX = {
+  title: 'Number of Rules(Max):',
+  type: 'number',
+  data: {
+    max: 5,
+    min: 1
+  }
+};

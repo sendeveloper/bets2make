@@ -1,8 +1,9 @@
 import React from 'react';
 import { Col, Row, Form } from 'react-bootstrap';
-import NumericInput from 'react-numeric-input';
+import InputNumber from 'rc-input-number';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'rc-input-number/assets/index.css';
 
 class FormInlineComponent extends React.Component {
   numberFormat = e => {
@@ -11,6 +12,12 @@ class FormInlineComponent extends React.Component {
     return parseInt(e, 10)
       .toString(upper)
       .toUpperCase();
+  };
+
+  numberParse = e => {
+    const { data } = this.props;
+    const upper = data.type === 'hex' ? 16 : 10;
+    return parseInt(e, upper);
   };
 
   render() {
@@ -23,11 +30,12 @@ class FormInlineComponent extends React.Component {
           </Col>
           <Col md={6} sm={6}>
             {(data.type === 'number' || data.type === 'hex') && (
-              <NumericInput
+              <InputNumber
                 className="formNumberControl"
                 max={data.data.max}
                 min={data.data.min}
                 value={value}
+                displaytype="text"
                 onChange={e => onChange(stateId, e)}
                 style={{
                   wrap: {
@@ -40,7 +48,8 @@ class FormInlineComponent extends React.Component {
                     width: '100%'
                   }
                 }}
-                format={e => this.numberFormat(e)}
+                parser={e => this.numberParse(e)}
+                formatter={e => this.numberFormat(e)}
               />
             )}
             {data.type === 'date' && (

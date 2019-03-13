@@ -5,7 +5,10 @@ import {
   LEAGUE,
   BETTING_STYLE,
   NUMBER_OF_STRATEGY,
-  START_DATE
+  START_DATE,
+  END_DATE,
+  NUMBER_RULE_MIN,
+  NUMBER_RULE_MAX
 } from '../utils/constants';
 
 class HomePage extends React.Component {
@@ -15,18 +18,27 @@ class HomePage extends React.Component {
       league: 0,
       betting: 0,
       strategy: 500,
-      startDate: new Date()
-      // endDate: "",
+      startDate: new Date('01/10/2006'),
+      endDate: new Date(),
+      numberRuleMin: 1,
+      numberRuleMax: 5
     };
   }
 
   onChange = (type, value) => {
-    console.log(type, value);
     this.setState({ [type]: value });
   };
 
   render() {
-    const { league, betting, strategy, startDate } = this.state;
+    const {
+      league,
+      betting,
+      strategy,
+      startDate,
+      endDate,
+      numberRuleMin,
+      numberRuleMax
+    } = this.state;
     return (
       <Container>
         <h1>Bets 2 Make</h1>
@@ -65,6 +77,24 @@ class HomePage extends React.Component {
                   data={START_DATE}
                   stateId="startDate"
                   value={startDate}
+                  onChange={this.onChange}
+                />
+                <FormInlineComponent
+                  data={END_DATE}
+                  stateId="endDate"
+                  value={endDate}
+                  onChange={this.onChange}
+                />
+                <FormInlineComponent
+                  data={NUMBER_RULE_MIN}
+                  stateId="numberRuleMin"
+                  value={numberRuleMin}
+                  onChange={this.onChange}
+                />
+                <FormInlineComponent
+                  data={NUMBER_RULE_MAX}
+                  stateId="numberRuleMax"
+                  value={numberRuleMax}
                   onChange={this.onChange}
                 />
               </Form>
