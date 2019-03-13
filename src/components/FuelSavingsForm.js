@@ -14,7 +14,7 @@ const FuelSavingsForm = ({ fuelSaves, onSaveClick, onChange }) => (
             <label htmlFor="newMpg">New Vehicle MPG</label>
           </td>
           <td>
-            <FuelSavingsResults
+            <FuelSavingsTextInput
               onChange={onChange}
               name="newMpg"
               value={fuelSaves.newMpg}

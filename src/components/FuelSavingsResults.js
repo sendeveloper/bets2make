@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { scrubFormatting } from '../utils/numberFormat';
 
 const FuelSavingsResults = ({ savings }) => {
@@ -32,10 +31,6 @@ const FuelSavingsResults = ({ savings }) => {
       </tbody>
     </table>
   );
-};
-
-FuelSavingsResults.propTypes = {
-  savings: PropTypes.shape.isRequired
 };
 
 export default FuelSavingsResults;
