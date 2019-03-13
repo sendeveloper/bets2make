@@ -10,6 +10,12 @@
     This is an example of how to add features to index.html for only one environment.
     To track JavaScript errors via TrackJS, sign up for a free trial at TrackJS.com and enter your token in /webpack.config.prod.js on line 55.
    -->
+  <link
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous"
+  />
   <% if (htmlWebpackPlugin.options.trackJSToken) { %>
   <script>window._trackJs = {token: '<%= htmlWebpackPlugin.options.trackJSToken %>'};</script>
   <script src="https://d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js"></script>
@@ -17,7 +23,7 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8"/>
-  <title>React Slingshot</title>
+  <title>Bets 2 Make</title>
 </head>
 <body>
 <div id="app"></div>

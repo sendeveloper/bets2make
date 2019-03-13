@@ -1,39 +1,54 @@
-/* Variables */
-$vin-blue: #5bb7db;
-$vin-green: #60b044;
-$vin-red: #ff0000;
-
+$label-color: #333;
+$control-color: #333;
+$normal-padding: 15px;
+$normal-border: #ccc;
+$normal-fontSize: 16px;
+$normal-borderRadius: 0.25rem;
+$normal-borderEntire: 1px solid #ced4da;
 /* Styles */
 body {
-  font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 1.4em;
   color: #4d4d4d;
-  min-width: 230px;
-  max-width: 550px;
+  font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-smoothing: antialiased;
+  font-weight: 300;
+  line-height: 1.4em;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  font-weight: 300;
 }
 
-td {
-  padding: 12px;
+.inputParameters {
+  border: 1px solid $normal-border;
+  padding: $normal-padding;
 }
-
-h2 {
-  color: $vin-blue;
+.signals {
+  border: 1px solid $normal-border;
+  padding: $normal-padding;
 }
-
-.savings {
-  color: $vin-green;
+.componentTitle {
+  font-size: $normal-fontSize;
+  font-weight: 600;
 }
-.loss {
-  color: $vin-red;
+.formLabel {
+  color: $label-color;
+  font-size: $normal-fontSize;
+  font-weight: 400;
+  line-height: 2.375rem;
+  margin-bottom: 0;
 }
-input.small {
-  width: 46px;
+.formControl {
+  color: $control-color;
 }
-td.fuel-savings-label {
-  width: 175px;
+.react-datepicker-wrapper {
+  width: 100%;
+  .react-datepicker__input-container {
+    width: 100%;
+  }
+}
+.formatDateControl {
+  border: $normal-borderEntire;
+  border-radius: $normal-borderRadius;
+  height: 38px;
+  padding: 6px;
+  width: 100%;
 }
