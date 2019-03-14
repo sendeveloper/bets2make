@@ -134,10 +134,8 @@ class HomePage extends React.Component {
         // eslint-disable-next-line
         treeArray.map(treeEach => {
           const index = treeEach.indexOf(each);
-          if (index !== -1) {
-            if (expanded.indexOf(treeEach[0]) === -1) {
-              expanded.push(treeEach[0]);
-            }
+          if (index !== -1 && expanded.indexOf(treeEach[0]) === -1) {
+            expanded.push(treeEach[0]);
           }
         });
       });
