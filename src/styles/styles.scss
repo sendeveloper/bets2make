@@ -18,8 +18,11 @@ body {
   -moz-font-smoothing: antialiased;
 }
 .pageContainer {
-  background: #efefef;
+  background: #fff;
   border-radius: 5px;
+  border-left: 2px solid #eee;
+  border-right: 2px solid #eee;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.05);
   height: 100%;
   padding: 15px;
 }
@@ -123,4 +126,10 @@ body {
 .rc-tree {
   height: 600px;
   overflow-y: scroll;
+}
+
+@media (min-width: 576px) and (max-width: 768px) {
+  .container {
+    max-width: 100%;
+  }
 }

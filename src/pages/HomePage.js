@@ -43,10 +43,11 @@ class HomePage extends React.Component {
       sizeModel: 0,
       startingMoney: 100000,
 
-      expandedKeys: ['A'],
+      alertEmail: '',
+
       autoExpandParent: true,
-      checkedKeys: ['Boy'],
-      selectedKeys: []
+      expandedKeys: [],
+      checkedKeys: []
     };
   }
 
@@ -79,15 +80,18 @@ class HomePage extends React.Component {
   };
 
   onChange = (type, value) => {
-    const { sizeModel } = this.state;
+    const { league, sizeModel } = this.state;
     this.setState({ [type]: value });
+    if (type === 'league' && league !== value) {
+      this.setState({ expandedKeys: [], checkedKeys: [] });
+    }
     if (type === 'sizeModel' && sizeModel !== value) {
       this.setState({ betAmount: BET_AMOUNT[value].data.value });
     }
   };
 
   onExpand = expandedKeys => {
-    console.log('onExpand', expandedKeys);
+    // console.log('onExpand', expandedKeys);
     // if not set autoExpandParent to false, if children expanded, parent can not collapse.
     // or, you can remove all expanded chilren keys.
     this.setState({
@@ -102,30 +106,66 @@ class HomePage extends React.Component {
     });
   };
 
-  onSelect = (selectedKeys, info) => {
-    console.log('onSelect', selectedKeys, info);
-    this.setState({
-      selectedKeys
-    });
+  generateSignal = count => {
+    if (count === 0) {
+      this.setState({
+        checkedKeys: [],
+        expandedKeys: [],
+        autoExpandParent: true
+      });
+    } else if (count < 0) {
+      // error
+    } else {
+      const { league } = this.state;
+      const str = TREE_DATA[league].split('|');
+      let array = [];
+      const expanded = [];
+      const treeArray = [];
+      // eslint-disable-next-line
+      str.map(item => {
+        const itemArray = item.split(';');
+        treeArray.push(itemArray);
+        array = [...array, ...itemArray.slice(1)];
+      });
+      const shuffled = array.sort(() => 0.5 - Math.random());
+      const checked = shuffled.slice(0, count);
+      // eslint-disable-next-line
+      checked.map(each => {
+        // eslint-disable-next-line
+        treeArray.map(treeEach => {
+          const index = treeEach.indexOf(each);
+          if (index !== -1) {
+            if (expanded.indexOf(treeEach[0]) === -1) {
+              expanded.push(treeEach[0]);
+            }
+          }
+        });
+      });
+      this.setState({
+        checkedKeys: checked,
+        expandedKeys: expanded,
+        autoExpandParent: true
+      });
+    }
   };
 
   render() {
     const {
       league,
+      alertEmail,
       expandedKeys,
       autoExpandParent,
-      checkedKeys,
-      selectedKeys
+      checkedKeys
     } = this.state;
     const formData = this.generateArray();
 
     return (
       <Container className="pageContainer">
         <Row>
-          <Col md={3} sm={3}>
+          <Col md={3}>
             <h1>Bets 2 Make</h1>
           </Col>
-          <Col md={9} sm={9}>
+          <Col md={9}>
             <ButtonToolbar className="menuButtonsContainer">
               <Button variant="link">Update Alerts</Button>
               <Button variant="link">Tonight Mode</Button>
@@ -135,7 +175,7 @@ class HomePage extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col md={12} sm={12}>
+          <Col md={12}>
             <Row>
               <Col md={6}>
                 <div className="chooseLeague">
@@ -151,7 +191,7 @@ class HomePage extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col md={6} sm={6}>
+          <Col md={6}>
             <div className="inputParameters">
               <h2 className="componentTitle">Input Parameters</h2>
               <Form className="componentForm">
@@ -164,9 +204,11 @@ class HomePage extends React.Component {
                     onChange={this.onChange}
                   />
                 ))}
-                <Alert variant="info" className="infoAlert">
-                  Please set your Alerts Email
-                </Alert>
+                {alertEmail === '' && (
+                  <Alert variant="info" className="infoAlert">
+                    Please set your Alerts Email
+                  </Alert>
+                )}
                 <ButtonToolbar className="parameterButtonsContainer">
                   <Button variant="link">Show Portfolio</Button>
                   <Button variant="link">Calculators</Button>
@@ -174,7 +216,7 @@ class HomePage extends React.Component {
               </Form>
             </div>
           </Col>
-          <Col md={6} sm={6}>
+          <Col md={6}>
             <div className="signals">
               <h2 className="componentTitle">
                 Signals
@@ -190,15 +232,27 @@ class HomePage extends React.Component {
                   autoExpandParent={autoExpandParent}
                   onCheck={this.onCheck}
                   checkedKeys={checkedKeys}
-                  onSelect={this.onSelect}
-                  selectedKeys={selectedKeys}
+                  showIcon={false}
+                  selectable={false}
                 >
                   {loopTreeData(TREE_DATA[league])}
                 </Tree>
                 <ButtonToolbar className="parameterButtonsContainer">
-                  <Button variant="link">Random 200</Button>
-                  <Button variant="link">Random 500</Button>
-                  <Button variant="link">Clear</Button>
+                  <Button
+                    variant="link"
+                    onClick={() => this.generateSignal(200)}
+                  >
+                    Random 200
+                  </Button>
+                  <Button
+                    variant="link"
+                    onClick={() => this.generateSignal(500)}
+                  >
+                    Random 500
+                  </Button>
+                  <Button variant="link" onClick={() => this.generateSignal(0)}>
+                    Clear
+                  </Button>
                 </ButtonToolbar>
               </div>
             </div>
