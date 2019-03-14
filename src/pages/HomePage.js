@@ -193,7 +193,7 @@ class HomePage extends React.Component {
                   onSelect={this.onSelect}
                   selectedKeys={selectedKeys}
                 >
-                  {loopTreeData(TREE_DATA)}
+                  {loopTreeData(TREE_DATA[league])}
                 </Tree>
                 <ButtonToolbar className="parameterButtonsContainer">
                   <Button variant="link">Random 200</Button>
