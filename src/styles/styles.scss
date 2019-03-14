@@ -17,18 +17,64 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
 }
-
+.pageContainer {
+  background: #efefef;
+  border-radius: 5px;
+  height: 100%;
+  padding: 15px;
+}
+.menuButtonsContainer {
+  height: 56px;
+  justify-content: flex-start;
+  button:last-child {
+    margin-left: auto;
+  }
+}
+.chooseLeague {
+  border: 2px solid #bce8f1;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 15px 15px;
+  .form-group {
+    margin-bottom: 0;
+    label {
+      font-weight: 600;
+    }
+  }
+}
 .inputParameters {
-  border: 1px solid $normal-border;
-  padding: $normal-padding;
+  border: 1px solid #bce8f1;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .signals {
-  border: 1px solid $normal-border;
-  padding: $normal-padding;
+  border: 1px solid #bce8f1;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .componentTitle {
-  font-size: $normal-fontSize;
+  background-color: #337ab7;
+  border-bottom: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-color: #337ab7;
+  color: #fff;
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 0;
+  padding: 10px 15px;
+  position: relative;
+  .additional {
+    font-size: 14px;
+    font-style: italic;
+    position: absolute;
+    right: 15px;
+    top: 12px;
+  }
+}
+.componentForm {
+  padding: 15px;
 }
 .formLabel {
   color: $label-color;
@@ -67,4 +113,10 @@ body {
   height: $normal-height;
   padding: 6px;
   width: 100%;
+}
+.infoAlert {
+  font-weight: 400;
+}
+.parameterButtonsContainer {
+  justify-content: space-between;
 }

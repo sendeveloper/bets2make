@@ -61,7 +61,8 @@ export const NUMBER_OF_STRATEGY = {
   type: 'hex',
   data: {
     max: 500,
-    min: 1
+    min: 1,
+    step: 1
   }
 };
 
@@ -82,7 +83,8 @@ export const NUMBER_RULE_MIN = {
   type: 'number',
   data: {
     max: 5,
-    min: 1
+    min: 1,
+    step: 1
   }
 };
 
@@ -91,6 +93,119 @@ export const NUMBER_RULE_MAX = {
   type: 'number',
   data: {
     max: 5,
-    min: 1
+    min: 1,
+    step: 1
   }
 };
+
+export const MIN_BETS = {
+  title: 'Min Bets:',
+  type: 'number',
+  data: {
+    max: 1000,
+    min: 1,
+    step: 1
+  }
+};
+
+export const BET_AMOUNT = [
+  {
+    title: 'Bet Amount:',
+    type: 'number',
+    data: {
+      max: 10000,
+      min: 1,
+      step: 10,
+      value: 100
+    }
+  },
+  {
+    title: 'Bet %:',
+    type: 'number',
+    data: {
+      max: 100,
+      min: 1,
+      step: 1,
+      value: 2
+    }
+  },
+  {
+    title: 'Kelly Multiplier:',
+    type: 'number',
+    data: {
+      max: 10,
+      min: 1,
+      step: 0.01,
+      value: 1
+    }
+  }
+];
+
+export const SIZING_MODEL = {
+  title: 'Bet Sizing Method:',
+  type: 'select',
+  data: [
+    { value: 'Fixed $', key: 0 },
+    { value: 'Fixed %', key: 1 },
+    { value: 'Kelly', key: 2 }
+  ]
+};
+
+export const STARTING_MONEY = {
+  title: 'Starting Money:',
+  type: 'number',
+  data: {
+    max: 1000000,
+    min: 100,
+    step: 10000
+  }
+};
+
+export const TREE_DATA = [
+  {
+    key: 'A',
+    title: 'A',
+    children: [
+      {
+        key: 'Apple',
+        title: 'Apple'
+      },
+      {
+        key: 'Ace',
+        title: 'Ace'
+      }
+    ]
+  },
+  {
+    key: 'B',
+    title: 'B',
+    children: [
+      {
+        key: 'Boy',
+        title: 'Boy'
+      },
+      {
+        key: 'Busy',
+        title: 'Busy'
+      }
+    ]
+  },
+  {
+    key: 'C',
+    title: 'C'
+  },
+  {
+    key: 'D',
+    title: 'D',
+    children: [
+      {
+        key: 'Date',
+        title: 'Date'
+      },
+      {
+        key: 'Day',
+        title: 'Day'
+      }
+    ]
+  }
+];

@@ -8,16 +8,16 @@ import 'rc-input-number/assets/index.css';
 class FormInlineComponent extends React.Component {
   numberFormat = e => {
     const { data } = this.props;
-    const upper = data.type === 'hex' ? 16 : 10;
-    return parseInt(e, 10)
-      .toString(upper)
-      .toUpperCase();
+    return data.type === 'hex'
+      ? parseInt(e, 10)
+          .toString(16)
+          .toUpperCase()
+      : e;
   };
 
   numberParse = e => {
     const { data } = this.props;
-    const upper = data.type === 'hex' ? 16 : 10;
-    return parseInt(e, upper);
+    return data.type === 'hex' ? parseInt(e, 16) : e;
   };
 
   render() {
@@ -34,6 +34,7 @@ class FormInlineComponent extends React.Component {
                 className="formNumberControl"
                 max={data.data.max}
                 min={data.data.min}
+                step={data.data.step}
                 value={value}
                 displaytype="text"
                 onChange={e => onChange(stateId, e)}
