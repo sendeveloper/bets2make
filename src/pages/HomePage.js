@@ -11,8 +11,8 @@ import {
 } from 'react-bootstrap';
 import Tree from 'rc-tree';
 import 'rc-tree/assets/index.css';
+import CalculatorModal from '../components/CalculatorModal';
 import FormInlineComponent from '../components/FormInlineComponent';
-import FormTwoInputsGroupComponent from '../components/FormTwoInputsGroupComponent';
 import {
   LEAGUE,
   BETTING_STYLE,
@@ -25,8 +25,7 @@ import {
   BET_AMOUNT,
   SIZING_MODEL,
   STARTING_MONEY,
-  TREE_DATA,
-  BET_STYLE_DATA
+  TREE_DATA
 } from '../utils/constants';
 import { loopTreeData } from '../utils/functions';
 
@@ -54,27 +53,7 @@ class HomePage extends React.Component {
       modalEmailText: '',
       isOpenEmailModal: false,
 
-      isOpenCalculatorModal: false,
-      modalBetAmount: '',
-      modalMoneyLine: '',
-      modalFractional: '',
-      modalDecimal: '',
-      modalImpliedProbability: '',
-      modalWinnings: '',
-
-      isOpenBetCalculatorModal: false,
-      modalBetStyle1: '',
-      modalBetStyle2: '',
-      modalOddWinning1: '',
-      modalOddWinning2: '',
-      modalOddPush1: '',
-      modalOddPush2: '',
-      modalLine1: '',
-      modalLine2: '',
-      modalJuice1: '',
-      modalJuice2: '',
-      modalEV1: '',
-      modalEV2: ''
+      isOpenCalculatorModal: false
     };
   }
 
@@ -220,223 +199,8 @@ class HomePage extends React.Component {
     );
   };
 
-  closeCalculatorModal = () => {
-    this.setState({ isOpenCalculatorModal: false });
-  };
-
-  openCalculatorModal = () => {
-    this.setState({
-      isOpenCalculatorModal: true,
-      modalBetAmount: '',
-      modalMoneyLine: '',
-      modalFractional: '',
-      modalDecimal: '',
-      modalImpliedProbability: '',
-      modalWinnings: ''
-    });
-  };
-
-  switchCalculatorModal = () => {
-    this.setState({ isOpenCalculatorModal: false });
-    this.openBetCalculatorModal();
-  };
-
-  onCalclatorModalChangeInput = (key, e) => {
-    this.setState({ [key]: e });
-  };
-
-  showCalculatorModal = () => {
-    const {
-      isOpenCalculatorModal,
-      modalBetAmount,
-      modalMoneyLine,
-      modalFractional,
-      modalDecimal,
-      modalImpliedProbability,
-      modalWinnings
-    } = this.state;
-    return (
-      <Modal show={isOpenCalculatorModal} onHide={this.closeCalculatorModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Payoff Calculator</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Bet Amount:' }}
-              stateId="modalBetAmount"
-              value={modalBetAmount}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Moneyline:' }}
-              stateId="modalMoneyLine"
-              value={modalMoneyLine}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Fractional:' }}
-              stateId="modalFractional"
-              value={modalFractional}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Decimal:' }}
-              stateId="modalDecimal"
-              value={modalDecimal}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Implied Probability:' }}
-              stateId="modalImpliedProbability"
-              value={modalImpliedProbability}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-            <FormInlineComponent
-              data={{ type: 'text', title: 'Winnings:' }}
-              stateId="modalWinnings"
-              value={modalWinnings}
-              onChange={this.onCalclatorModalChangeInput}
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="link" onClick={this.switchCalculatorModal}>
-            Switch to Best Line Calculator
-          </Button>
-          <Button variant="primary" onClick={this.closeCalculatorModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  };
-
-  closeBetCalculatorModal = () => {
-    this.setState({ isOpenBetCalculatorModal: false });
-  };
-
-  openBetCalculatorModal = () => {
-    this.setState({
-      isOpenBetCalculatorModal: true,
-      modalBetStyle1: '',
-      modalBetStyle2: '',
-      modalOddWinning1: '',
-      modalOddWinning2: '',
-      modalOddPush1: '',
-      modalOddPush2: '',
-      modalLine1: '',
-      modalLine2: '',
-      modalJuice1: '',
-      modalJuice2: '',
-      modalEV1: '',
-      modalEV2: ''
-    });
-  };
-
-  switchBetCalculatorModal = () => {
-    this.openCalculatorModal();
-    this.setState({ isOpenBetCalculatorModal: false });
-  };
-
-  onBetModalChangeInput = (key, e) => {
-    this.setState({ [key]: e });
-  };
-
-  showBetCalculatorModal = () => {
-    const {
-      isOpenBetCalculatorModal,
-      modalBetStyle1,
-      modalBetStyle2,
-      modalOddWinning1,
-      modalOddWinning2,
-      modalOddPush1,
-      modalOddPush2,
-      modalLine1,
-      modalLine2,
-      modalJuice1,
-      modalJuice2,
-      modalEV1,
-      modalEV2
-    } = this.state;
-    return (
-      <Modal
-        show={isOpenBetCalculatorModal}
-        onHide={this.closeBetCalculatorModal}
-        className="betModal"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Best Line Calculator</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            <Col md={4} />
-            <Col md={4} className="betHeaderLabel">
-              LINE 1
-            </Col>
-            <Col md={4} className="betHeaderLabel">
-              LINE 2
-            </Col>
-          </Row>
-          <FormTwoInputsGroupComponent
-            data={BET_STYLE_DATA}
-            stateId1="modalBetStyle1"
-            stateId2="modalBetStyle2"
-            value1={modalBetStyle1}
-            value2={modalBetStyle2}
-            onChange={this.onBetModalChangeInput}
-          />
-          <FormTwoInputsGroupComponent
-            data={{ title: 'Odds of Winning %:', type: 'text' }}
-            stateId1="modalOddWinning1"
-            stateId2="modalOddWinning2"
-            value1={modalOddWinning1}
-            value2={modalOddWinning2}
-            onChange={this.onBetModalChangeInput}
-          />
-          <FormTwoInputsGroupComponent
-            data={{ title: 'Odds of Push %:', type: 'text' }}
-            stateId1="modalOddPush1"
-            stateId2="modalOddPush2"
-            value1={modalOddPush1}
-            value2={modalOddPush2}
-            onChange={this.onBetModalChangeInput}
-          />
-          <FormTwoInputsGroupComponent
-            data={{ title: 'Line:', type: 'text' }}
-            stateId1="modalLine1"
-            stateId2="modalLine2"
-            value1={modalLine1}
-            value2={modalLine2}
-            onChange={this.onBetModalChangeInput}
-          />
-          <FormTwoInputsGroupComponent
-            data={{ title: 'Juice %:', type: 'text' }}
-            stateId1="modalJuice1"
-            stateId2="modalJuice2"
-            value1={modalJuice1}
-            value2={modalJuice2}
-            onChange={this.onBetModalChangeInput}
-          />
-          <FormTwoInputsGroupComponent
-            data={{ title: 'EV:', type: 'text' }}
-            stateId1="modalEV1"
-            stateId2="modalEV2"
-            value1={modalEV1}
-            value2={modalEV2}
-            onChange={this.onBetModalChangeInput}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="link" onClick={this.switchBetCalculatorModal}>
-            Switch to Payoff Calculator
-          </Button>
-          <Button variant="primary" onClick={this.closeBetCalculatorModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
+  onCalcModalChange = b => {
+    this.setState({ isOpenCalculatorModal: b });
   };
 
   render() {
@@ -445,7 +209,8 @@ class HomePage extends React.Component {
       alertEmail,
       expandedKeys,
       autoExpandParent,
-      checkedKeys
+      checkedKeys,
+      isOpenCalculatorModal
     } = this.state;
     const formData = this.generateArray();
 
@@ -505,7 +270,7 @@ class HomePage extends React.Component {
                   <Button variant="link">Show Portfolio</Button>
                   <Button
                     variant="link"
-                    onClick={() => this.openCalculatorModal()}
+                    onClick={() => this.onCalcModalChange(true)}
                   >
                     Calculators
                   </Button>
@@ -556,8 +321,10 @@ class HomePage extends React.Component {
           </Col>
         </Row>
         {this.showEmailModal()}
-        {this.showCalculatorModal()}
-        {this.showBetCalculatorModal()}
+        <CalculatorModal
+          calc={isOpenCalculatorModal}
+          onChangeStatus={this.onCalcModalChange}
+        />
       </Container>
     );
   }

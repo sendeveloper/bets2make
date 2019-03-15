@@ -1,7 +1,5 @@
 import React from 'react';
 import { Col, Row, Form } from 'react-bootstrap';
-import 'react-datepicker/dist/react-datepicker.css';
-import 'rc-input-number/assets/index.css';
 
 class FormTwoInputsGroupComponent extends React.Component {
   render() {
