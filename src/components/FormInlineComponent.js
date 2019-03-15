@@ -53,6 +53,14 @@ class FormInlineComponent extends React.Component {
                 formatter={e => this.numberFormat(e)}
               />
             )}
+            {data.type === 'text' && (
+              <Form.Control
+                type="text"
+                className="formControl"
+                onChange={e => onChange(stateId, e.currentTarget.value)}
+                value={value}
+              />
+            )}
             {data.type === 'date' && (
               <DatePicker
                 className="formatDateControl"

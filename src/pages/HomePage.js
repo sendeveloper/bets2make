@@ -6,11 +6,13 @@ import {
   Form,
   Alert,
   ButtonToolbar,
-  Button
+  Button,
+  Modal
 } from 'react-bootstrap';
 import Tree from 'rc-tree';
 import 'rc-tree/assets/index.css';
 import FormInlineComponent from '../components/FormInlineComponent';
+import FormTwoInputsGroupComponent from '../components/FormTwoInputsGroupComponent';
 import {
   LEAGUE,
   BETTING_STYLE,
@@ -23,7 +25,8 @@ import {
   BET_AMOUNT,
   SIZING_MODEL,
   STARTING_MONEY,
-  TREE_DATA
+  TREE_DATA,
+  BET_STYLE_DATA
 } from '../utils/constants';
 import { loopTreeData } from '../utils/functions';
 
@@ -43,11 +46,35 @@ class HomePage extends React.Component {
       sizeModel: 0,
       startingMoney: 100000,
 
-      alertEmail: '',
-
       autoExpandParent: true,
       expandedKeys: [],
-      checkedKeys: []
+      checkedKeys: [],
+
+      alertEmail: '',
+      modalEmailText: '',
+      isOpenEmailModal: false,
+
+      isOpenCalculatorModal: false,
+      modalBetAmount: '',
+      modalMoneyLine: '',
+      modalFractional: '',
+      modalDecimal: '',
+      modalImpliedProbability: '',
+      modalWinnings: '',
+
+      isOpenBetCalculatorModal: false,
+      modalBetStyle1: '',
+      modalBetStyle2: '',
+      modalOddWinning1: '',
+      modalOddWinning2: '',
+      modalOddPush1: '',
+      modalOddPush2: '',
+      modalLine1: '',
+      modalLine2: '',
+      modalJuice1: '',
+      modalJuice2: '',
+      modalEV1: '',
+      modalEV2: ''
     };
   }
 
@@ -144,6 +171,274 @@ class HomePage extends React.Component {
     }
   };
 
+  acceptAlertModal = () => {
+    const { modalEmailText } = this.state;
+    this.setState({ alertEmail: modalEmailText, isOpenEmailModal: false });
+  };
+
+  closeAlertModal = () => {
+    this.setState({ isOpenEmailModal: false });
+  };
+
+  openAlertModal = () => {
+    const { alertEmail } = this.state;
+    this.setState({ isOpenEmailModal: true, modalEmailText: alertEmail });
+  };
+
+  onChangeInput = e => {
+    this.setState({ modalEmailText: e.target.value });
+  };
+
+  showEmailModal = () => {
+    const { isOpenEmailModal, modalEmailText } = this.state;
+    return (
+      <Modal show={isOpenEmailModal} onHide={this.closeAlertModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Change Email</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Input the email where you want to receive notifications <br />
+            (Leave blank to deactivate notifications)
+          </p>
+          <Form.Control
+            type="text"
+            placeholder="Email Address"
+            value={modalEmailText}
+            onChange={e => this.onChangeInput(e)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.closeAlertModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={this.acceptAlertModal}>
+            Accept
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
+  closeCalculatorModal = () => {
+    this.setState({ isOpenCalculatorModal: false });
+  };
+
+  openCalculatorModal = () => {
+    this.setState({
+      isOpenCalculatorModal: true,
+      modalBetAmount: '',
+      modalMoneyLine: '',
+      modalFractional: '',
+      modalDecimal: '',
+      modalImpliedProbability: '',
+      modalWinnings: ''
+    });
+  };
+
+  switchCalculatorModal = () => {
+    this.setState({ isOpenCalculatorModal: false });
+    this.openBetCalculatorModal();
+  };
+
+  onCalclatorModalChangeInput = (key, e) => {
+    this.setState({ [key]: e });
+  };
+
+  showCalculatorModal = () => {
+    const {
+      isOpenCalculatorModal,
+      modalBetAmount,
+      modalMoneyLine,
+      modalFractional,
+      modalDecimal,
+      modalImpliedProbability,
+      modalWinnings
+    } = this.state;
+    return (
+      <Modal show={isOpenCalculatorModal} onHide={this.closeCalculatorModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Payoff Calculator</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Bet Amount:' }}
+              stateId="modalBetAmount"
+              value={modalBetAmount}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Moneyline:' }}
+              stateId="modalMoneyLine"
+              value={modalMoneyLine}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Fractional:' }}
+              stateId="modalFractional"
+              value={modalFractional}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Decimal:' }}
+              stateId="modalDecimal"
+              value={modalDecimal}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Implied Probability:' }}
+              stateId="modalImpliedProbability"
+              value={modalImpliedProbability}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+            <FormInlineComponent
+              data={{ type: 'text', title: 'Winnings:' }}
+              stateId="modalWinnings"
+              value={modalWinnings}
+              onChange={this.onCalclatorModalChangeInput}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="link" onClick={this.switchCalculatorModal}>
+            Switch to Best Line Calculator
+          </Button>
+          <Button variant="primary" onClick={this.closeCalculatorModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
+  closeBetCalculatorModal = () => {
+    this.setState({ isOpenBetCalculatorModal: false });
+  };
+
+  openBetCalculatorModal = () => {
+    this.setState({
+      isOpenBetCalculatorModal: true,
+      modalBetStyle1: '',
+      modalBetStyle2: '',
+      modalOddWinning1: '',
+      modalOddWinning2: '',
+      modalOddPush1: '',
+      modalOddPush2: '',
+      modalLine1: '',
+      modalLine2: '',
+      modalJuice1: '',
+      modalJuice2: '',
+      modalEV1: '',
+      modalEV2: ''
+    });
+  };
+
+  switchBetCalculatorModal = () => {
+    this.openCalculatorModal();
+    this.setState({ isOpenBetCalculatorModal: false });
+  };
+
+  onBetModalChangeInput = (key, e) => {
+    this.setState({ [key]: e });
+  };
+
+  showBetCalculatorModal = () => {
+    const {
+      isOpenBetCalculatorModal,
+      modalBetStyle1,
+      modalBetStyle2,
+      modalOddWinning1,
+      modalOddWinning2,
+      modalOddPush1,
+      modalOddPush2,
+      modalLine1,
+      modalLine2,
+      modalJuice1,
+      modalJuice2,
+      modalEV1,
+      modalEV2
+    } = this.state;
+    return (
+      <Modal
+        show={isOpenBetCalculatorModal}
+        onHide={this.closeBetCalculatorModal}
+        className="betModal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Best Line Calculator</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col md={4} />
+            <Col md={4} className="betHeaderLabel">
+              LINE 1
+            </Col>
+            <Col md={4} className="betHeaderLabel">
+              LINE 2
+            </Col>
+          </Row>
+          <FormTwoInputsGroupComponent
+            data={BET_STYLE_DATA}
+            stateId1="modalBetStyle1"
+            stateId2="modalBetStyle2"
+            value1={modalBetStyle1}
+            value2={modalBetStyle2}
+            onChange={this.onBetModalChangeInput}
+          />
+          <FormTwoInputsGroupComponent
+            data={{ title: 'Odds of Winning %:', type: 'text' }}
+            stateId1="modalOddWinning1"
+            stateId2="modalOddWinning2"
+            value1={modalOddWinning1}
+            value2={modalOddWinning2}
+            onChange={this.onBetModalChangeInput}
+          />
+          <FormTwoInputsGroupComponent
+            data={{ title: 'Odds of Push %:', type: 'text' }}
+            stateId1="modalOddPush1"
+            stateId2="modalOddPush2"
+            value1={modalOddPush1}
+            value2={modalOddPush2}
+            onChange={this.onBetModalChangeInput}
+          />
+          <FormTwoInputsGroupComponent
+            data={{ title: 'Line:', type: 'text' }}
+            stateId1="modalLine1"
+            stateId2="modalLine2"
+            value1={modalLine1}
+            value2={modalLine2}
+            onChange={this.onBetModalChangeInput}
+          />
+          <FormTwoInputsGroupComponent
+            data={{ title: 'Juice %:', type: 'text' }}
+            stateId1="modalJuice1"
+            stateId2="modalJuice2"
+            value1={modalJuice1}
+            value2={modalJuice2}
+            onChange={this.onBetModalChangeInput}
+          />
+          <FormTwoInputsGroupComponent
+            data={{ title: 'EV:', type: 'text' }}
+            stateId1="modalEV1"
+            stateId2="modalEV2"
+            value1={modalEV1}
+            value2={modalEV2}
+            onChange={this.onBetModalChangeInput}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="link" onClick={this.switchBetCalculatorModal}>
+            Switch to Payoff Calculator
+          </Button>
+          <Button variant="primary" onClick={this.closeBetCalculatorModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
   render() {
     const {
       league,
@@ -165,7 +460,9 @@ class HomePage extends React.Component {
               <Button variant="link">Update Alerts</Button>
               <Button variant="link">Tonight Mode</Button>
               <Button variant="link">Run Simulation</Button>
-              <Button variant="link">Modify Alerts Email</Button>
+              <Button variant="link" onClick={() => this.openAlertModal()}>
+                Modify Alerts Email
+              </Button>
             </ButtonToolbar>
           </Col>
         </Row>
@@ -206,7 +503,12 @@ class HomePage extends React.Component {
                 )}
                 <ButtonToolbar className="parameterButtonsContainer">
                   <Button variant="link">Show Portfolio</Button>
-                  <Button variant="link">Calculators</Button>
+                  <Button
+                    variant="link"
+                    onClick={() => this.openCalculatorModal()}
+                  >
+                    Calculators
+                  </Button>
                 </ButtonToolbar>
               </Form>
             </div>
@@ -253,6 +555,9 @@ class HomePage extends React.Component {
             </div>
           </Col>
         </Row>
+        {this.showEmailModal()}
+        {this.showCalculatorModal()}
+        {this.showBetCalculatorModal()}
       </Container>
     );
   }

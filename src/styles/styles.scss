@@ -56,11 +56,11 @@ body {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .componentTitle {
-  background-color: #337ab7;
+  background-color: #17a2b8;
   border-bottom: 0;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  border-color: #337ab7;
+  border-color: #17a2b8;
   color: #fff;
   font-size: 18px;
   font-weight: 600;
@@ -126,6 +126,16 @@ body {
 .rc-tree {
   height: 600px;
   overflow-y: scroll;
+}
+
+.betModal {
+  .modal-dialog {
+    max-width: 600px;
+    .betHeaderLabel {
+      padding-bottom: 5px;
+      font-weight: 600;
+    }
+  }
 }
 
 @media (min-width: 576px) and (max-width: 768px) {

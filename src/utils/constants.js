@@ -183,3 +183,12 @@ export const TREE_DATA = [
   GROUPS_SPA,
   GROUPS_NHL
 ];
+
+export const BET_STYLE_DATA = {
+  title: 'Bet Style:',
+  type: 'select',
+  data: [
+    { value: 'Moneyline', key: 'Moneyline' },
+    { value: 'Spread', key: 'Spread' }
+  ]
+};
