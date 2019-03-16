@@ -3,6 +3,7 @@ import { Col, Row, Form, Button, Modal } from 'react-bootstrap';
 import FormInlineComponent from './FormInlineComponent';
 import FormTwoInputsGroupComponent from './FormTwoInputsGroupComponent';
 import { BET_STYLE_DATA } from '../utils/constants';
+import { convertFloatToFraction, toDecimal } from '../utils/functions';
 
 class CalculatorModal extends React.Component {
   constructor(props) {
@@ -35,11 +36,131 @@ class CalculatorModal extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.calc !== prevState.isOpenCalculatorModal) {
-      return { isOpenCalculatorModal: nextProps.calc };
+      return {
+        isOpenCalculatorModal: nextProps.calc,
+        modalBetAmount: '',
+        modalMoneyLine: '',
+        modalFractional: '',
+        modalDecimal: '',
+        modalImpliedProbability: '',
+        modalWinnings: ''
+      };
     } else {
       return null;
     }
   }
+
+  refreshCalculation = () => {
+    const { modalBetAmount, modalMoneyLine } = this.state;
+    const betAmount = Number.parseFloat(modalBetAmount) || 0;
+    const moneyline = Number.parseFloat(modalMoneyLine) || 0;
+    let impProb = 0;
+    let winnings = 0;
+    this.setBackground('modalBetAmount', betAmount === 0);
+    if (moneyline !== 0) {
+      if (moneyline < 0) {
+        impProb = Math.abs(moneyline) / (Math.abs(moneyline) + 100);
+        winnings = betAmount / (Math.abs(moneyline) / 100);
+      } else {
+        impProb = 100 / (Math.abs(moneyline) + 100);
+        winnings = betAmount * (Math.abs(moneyline) / 100);
+      }
+    }
+
+    this.setState({
+      modalWinnings: `$ ${winnings.toFixed(2)}`,
+      modalImpliedProbability: `${(impProb * 100).toFixed(2)} %`
+    });
+  };
+
+  onMoneyLineChange = () => {
+    const { modalMoneyLine } = this.state;
+    const moneyline = Number.parseFloat(modalMoneyLine) || 0;
+    let decVal = 0;
+    let fracVal = 0;
+    if (moneyline !== 0) {
+      this.setBackground('modalMoneyLine', false);
+      if (moneyline < 0) {
+        decVal = 100 / Math.abs(moneyline) + 1;
+        fracVal = 100 / Math.abs(moneyline);
+      } else {
+        decVal = moneyline / 100 + 1;
+        fracVal = moneyline / 100;
+      }
+    } else {
+      this.setBackground('modalMoneyLine', true);
+    }
+    this.setState(
+      {
+        modalDecimal: decVal.toFixed(4),
+        modalFractional: convertFloatToFraction(fracVal)
+      },
+      () => {
+        this.refreshCalculation();
+      }
+    );
+  };
+
+  onFractionalChange = () => {
+    const { modalFractional } = this.state;
+    const fracVal = toDecimal(modalFractional);
+    let decVal = 0;
+    let mlVal = 0;
+    if (fracVal > 0) {
+      decVal = fracVal + 1;
+      mlVal = 100 / fracVal;
+      this.setBackground('modalFractional', false);
+    } else {
+      this.setBackground('modalFractional', true);
+    }
+    this.setState(
+      {
+        modalDecimal: decVal.toFixed(4),
+        modalMoneyLine: mlVal.toFixed(0)
+      },
+      () => {
+        this.refreshCalculation();
+      }
+    );
+  };
+
+  onDecimalChange = () => {
+    const { modalDecimal } = this.state;
+    const decVal = Number.parseFloat(modalDecimal) || 0;
+    let mlVal = 0;
+    let fracVal = 0;
+    if (decVal > 1) {
+      mlVal = 100 / (decVal - 1);
+      fracVal = decVal - 1;
+      this.setBackground('modalDecimal', false);
+    } else {
+      this.setBackground('modalDecimal', true);
+    }
+    this.setState(
+      {
+        modalMoneyLine: mlVal.toFixed(0),
+        modalFractional: convertFloatToFraction(fracVal)
+      },
+      () => {
+        this.refreshCalculation();
+      }
+    );
+  };
+
+  setBackground = (id, isIncorrect) => {
+    console.log(id, isIncorrect);
+    // if(text != txtBetAmount)
+    // {
+    //     txtDecimal.BackColor = txtImpProb.BackColor;
+    //     txtFractional.BackColor = txtImpProb.BackColor;
+    //     txtMoneyline.BackColor = txtImpProb.BackColor;
+    // }
+
+    // if(isIncorrect)
+    //     text.BackColor = Color.FromArgb(255, 90, 64, 64);
+    // else
+    //     text.BackColor = txtImpProb.BackColor;
+  };
 
   closeCalculatorModal = () => {
     const { onChangeStatus } = this.props;
@@ -65,7 +186,17 @@ class CalculatorModal extends React.Component {
   };
 
   onCalclatorModalChangeInput = (key, e) => {
-    this.setState({ [key]: e });
+    this.setState({ [key]: e }, () => {
+      if (key === 'modalBetAmount') {
+        this.refreshCalculation();
+      } else if (key === 'modalMoneyLine') {
+        this.onMoneyLineChange();
+      } else if (key === 'modalFractional') {
+        this.onFractionalChange();
+      } else if (key === 'modalDecimal') {
+        this.onDecimalChange();
+      }
+    });
   };
 
   showCalculatorModal = () => {
