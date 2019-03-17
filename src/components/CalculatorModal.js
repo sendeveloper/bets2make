@@ -3,7 +3,7 @@ import { Col, Row, Form, Button, Modal } from 'react-bootstrap';
 import FormInlineComponent from './FormInlineComponent';
 import FormTwoInputsGroupComponent from './FormTwoInputsGroupComponent';
 import { BET_STYLE_DATA } from '../utils/constants';
-import { convertFloatToFraction, toDecimal } from '../utils/functions';
+import { convertFloatToFraction, toDecimal, getEV } from '../utils/functions';
 
 class CalculatorModal extends React.Component {
   constructor(props) {
@@ -103,6 +103,7 @@ class CalculatorModal extends React.Component {
 
   onFractionalChange = () => {
     const { modalFractional } = this.state;
+    console.log('modalFractional', modalFractional);
     const fracVal = toDecimal(modalFractional);
     let decVal = 0;
     let mlVal = 0;
@@ -282,6 +283,95 @@ class CalculatorModal extends React.Component {
     );
   };
 
+  refreshCalculations = () => {
+    // modalBetStyle1: '',
+    // modalBetStyle2: '',
+    // modalOddWinning1: '',
+    // modalOddWinning2: '',
+    // modalOddPush1: '',
+    // modalOddPush2: '',
+    // modalLine1: '',
+    // modalLine2: '',
+    // modalJuice1: '',
+    // modalJuice2: '',
+    // modalEV1: '',
+    // modalEV2: ''
+    const {
+      modalBetStyle1,
+      modalBetStyle2,
+      modalOddWinning1,
+      modalOddWinning2,
+      modalOddPush1,
+      modalOddPush2,
+      modalLine1,
+      modalLine2,
+      modalJuice1,
+      modalJuice2
+    } = this.state;
+    // txtJuice1.BackColor = txtOdds1.BackColor;
+    // if (Utils.GetDecimalValueFromUserInput(txtJuice1.Text) <= 0 && cboStyle1.SelectedIndex == 1)
+    //     txtJuice1.BackColor = Color.FromArgb(255, 90, 64, 64);
+    // txtJuice2.BackColor = txtOdds1.BackColor;
+    // if (Utils.GetDecimalValueFromUserInput(txtJuice2.Text) <= 0 && cboStyle2.SelectedIndex == 1)
+    //     txtJuice2.BackColor = Color.FromArgb(255, 90, 64, 64);
+    const ev1 = this.calcEV(
+      modalBetStyle1,
+      modalOddWinning1,
+      modalOddPush1,
+      modalLine1,
+      modalJuice1
+    );
+    const ev2 = this.calcEV(
+      modalBetStyle2,
+      modalOddWinning2,
+      modalOddPush2,
+      modalLine2,
+      modalJuice2
+    );
+    this.setState(
+      {
+        modalEV1: ev1.toFixed(2),
+        modalEV2: ev2.toFixed(2)
+      },
+      () => {
+        // txtEV1.ForeColor = txtJuice1.ForeColor;
+        // txtEV2.ForeColor = txtJuice1.ForeColor;
+        // txtEV1.BackColor = Color.FromArgb(255, 64, 64, 64);
+        // txtEV2.BackColor = Color.FromArgb(255, 64, 64, 64);
+        // if (ev1 > ev2)
+        // {
+        //     txtEV1.ForeColor = Color.Lime;
+        //     txtEV1.BackColor = Color.FromArgb(255, 0, 64, 0);
+        // }
+        // else
+        // {
+        //     txtEV2.ForeColor = Color.Lime;
+        //     txtEV2.BackColor = Color.FromArgb(255, 0, 64, 0);
+        // }
+      }
+    );
+  };
+
+  calcEV = (style, oddsWin, oddsPush, line, juice) => {
+    const valWin = (Number.parseFloat(oddsWin) || 0) / 100;
+    const valPush = (Number.parseFloat(oddsPush) || 0) / 100;
+    const valLine = Number.parseFloat(line) || 0;
+    const valJuice = -((Number.parseFloat(juice) || 0) + 100);
+    if (valJuice >= -100 && style === 1) {
+      return 0;
+    }
+    if (valLine === 0 && style === 0) {
+      return 0;
+    }
+    return getEV(
+      style === 0 ? 'moneyline' : 'spread',
+      valLine,
+      valWin,
+      valJuice,
+      valPush
+    );
+  };
+
   closeBetCalculatorModal = () => {
     this.setState({ isOpenBetCalculatorModal: false });
   };
@@ -311,6 +401,7 @@ class CalculatorModal extends React.Component {
 
   onBetModalChangeInput = (key, e) => {
     this.setState({ [key]: e });
+    this.refreshCalculations();
   };
 
   showBetCalculatorModal = () => {
@@ -393,12 +484,12 @@ class CalculatorModal extends React.Component {
               <Form.Label className="formLabel">EV:</Form.Label>
             </Col>
             <Col md={4} sm={4}>
-              <Form.Label className="formLabel form-control">
+              <Form.Label className="formLabel form-control labelEV">
                 {modalEV1}
               </Form.Label>
             </Col>
             <Col md={4} sm={4}>
-              <Form.Label className="formLabel form-control">
+              <Form.Label className="formLabel form-control labelEV">
                 {modalEV2}
               </Form.Label>
             </Col>

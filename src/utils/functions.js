@@ -34,27 +34,43 @@ export const convertFloatToFraction = fraction => {
 };
 
 export const toDecimal = fraction => {
-  let result;
-  let wholeNum = 0;
-  let frac;
-  let deci = 0;
-  const fracStr = fraction.toString();
-  if (fracStr.search('/') >= 0) {
-    if (fracStr.search('-') >= 0) {
-      wholeNum = fracStr.split('-');
-      // eslint-disable-next-line
-      frac = wholeNum[1];
-      wholeNum = parseInt(wholeNum, 10);
-    } else {
-      frac = fracStr;
-    }
-    if (fracStr.search('/') >= 0) {
-      frac = frac.split('/');
-      deci = parseInt(frac[0], 10) / parseInt(frac[1], 10);
-    }
-    result = wholeNum + deci;
-  } else {
-    result = parseFloat(fracStr);
+  try {
+    const vals = fraction.split('/');
+    const n1 = Number.parseFloat(vals[0]);
+    const n2 = Number.parseFloat(vals[1]);
+    return n1 / n2;
+  } catch (e) {
+    console.log('e', e);
+    return 0;
   }
-  return result;
+};
+
+export const getEV = (style, valLine, valWin, valJuice, valPush) => {
+  if (style === 'moneyline') {
+    if (valLine === 0) {
+      return 0;
+    }
+
+    if (valLine > 0) {
+      return valWin * (100 * (valLine / 100)) - (1 - (valWin + valPush)) * 100;
+    } else {
+      return (
+        valWin * (100 / (Math.abs(valLine) / 100)) -
+        (1 - (valWin + valPush)) * 100
+      );
+    }
+  } else {
+    if (valJuice === 0) {
+      return 0;
+    }
+
+    if (valJuice > 0) {
+      return valWin * (100 * (valJuice / 100)) - (1 - (valWin + valPush)) * 100;
+    } else {
+      return (
+        valWin * (100 / (Math.abs(valJuice) / 100)) -
+        (1 - (valWin + valPush)) * 100
+      );
+    }
+  }
 };
