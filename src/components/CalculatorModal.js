@@ -17,6 +17,7 @@ class CalculatorModal extends React.Component {
       modalDecimal: '',
       modalImpliedProbability: '',
       modalWinnings: '',
+      additionalPayOffClass: {},
 
       isOpenBetCalculatorModal: false,
       modalBetStyle1: '',
@@ -31,6 +32,7 @@ class CalculatorModal extends React.Component {
       modalJuice2: '',
       modalEV1: '',
       modalEV2: ''
+      // additionalBestClass: {}
     };
   }
 
@@ -149,7 +151,19 @@ class CalculatorModal extends React.Component {
   };
 
   setBackground = (id, isIncorrect) => {
-    console.log(id, isIncorrect);
+    const { additionalPayOffClass } = this.state;
+    const additional = Object.assign({}, additionalPayOffClass);
+    if (id !== 'modalBetAmount') {
+      additional.modalDecimal = 'rgb(255,255,255)';
+      additional.modalFractional = 'rgb(255,255,255)';
+      additional.modalMoneyLine = 'rgb(255,255,255)';
+    }
+    if (isIncorrect) {
+      additional[id] = 'rgba(255,90,64,64)';
+    } else {
+      additional[id] = 'rgb(255,255,255)';
+    }
+    this.setState({ additionalPayOffClass: additional });
     // if(text != txtBetAmount)
     // {
     //     txtDecimal.BackColor = txtImpProb.BackColor;
@@ -208,7 +222,8 @@ class CalculatorModal extends React.Component {
       modalFractional,
       modalDecimal,
       modalImpliedProbability,
-      modalWinnings
+      modalWinnings,
+      additionalPayOffClass
     } = this.state;
     return (
       <Modal show={isOpenCalculatorModal} onHide={this.closeCalculatorModal}>
@@ -221,24 +236,28 @@ class CalculatorModal extends React.Component {
               data={{ type: 'text', title: 'Bet Amount:' }}
               stateId="modalBetAmount"
               value={modalBetAmount}
+              additionalStyle={additionalPayOffClass.modalBetAmount}
               onChange={this.onCalclatorModalChangeInput}
             />
             <FormInlineComponent
               data={{ type: 'text', title: 'Moneyline:' }}
               stateId="modalMoneyLine"
               value={modalMoneyLine}
+              additionalStyle={additionalPayOffClass.modalMoneyLine}
               onChange={this.onCalclatorModalChangeInput}
             />
             <FormInlineComponent
               data={{ type: 'text', title: 'Fractional:' }}
               stateId="modalFractional"
               value={modalFractional}
+              additionalStyle={additionalPayOffClass.modalFractional}
               onChange={this.onCalclatorModalChangeInput}
             />
             <FormInlineComponent
               data={{ type: 'text', title: 'Decimal:' }}
               stateId="modalDecimal"
               value={modalDecimal}
+              additionalStyle={additionalPayOffClass.modalDecimal}
               onChange={this.onCalclatorModalChangeInput}
             />
             <Form.Group>

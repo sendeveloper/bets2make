@@ -21,7 +21,8 @@ class FormInlineComponent extends React.Component {
   };
 
   render() {
-    const { data, onChange, stateId, value } = this.props;
+    const { data, onChange, stateId, value, additionalStyle } = this.props;
+    console.log(stateId, additionalStyle);
     return (
       <Form.Group>
         <Row>
@@ -59,6 +60,7 @@ class FormInlineComponent extends React.Component {
                 className="formControl"
                 onChange={e => onChange(stateId, e.currentTarget.value)}
                 value={value}
+                style={additionalStyle && { backgroundColor: additionalStyle }}
               />
             )}
             {data.type === 'date' && (
