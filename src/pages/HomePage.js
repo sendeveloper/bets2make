@@ -27,7 +27,7 @@ import {
   STARTING_MONEY,
   TREE_DATA
 } from '../utils/constants';
-import { loopTreeData } from '../utils/functions';
+import { loopTreeData, initialStrategyParameters } from '../utils/functions';
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -203,6 +203,49 @@ class HomePage extends React.Component {
     this.setState({ isOpenCalculatorModal: b });
   };
 
+  onTonightMode = () => {};
+
+  onRunSimulation = () => {
+    const {
+      strategy,
+      numberRuleMin,
+      numberRuleMax,
+      startDate,
+      endDate,
+      checkedKeys
+    } = this.state;
+    const cfg = {};
+    cfg.numStrategies = Number.parseInt(strategy, 10);
+    if (
+      Number.parseInt(numberRuleMax, 10) < Number.parseInt(numberRuleMin, 10)
+    ) {
+      alert('Please select correct min and max rules.');
+      return;
+    }
+    if (checkedKeys.length < numberRuleMin) {
+      alert('Please select more rules.');
+      return;
+    }
+    if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+      alert('Please check start and end dates.');
+      return;
+    }
+    cfg.testsPerGeneration = 50;
+    cfg.minNumOfRules = Number.parseInt(numberRuleMin, 10);
+    cfg.maxNumOfRules = Number.parseInt(numberRuleMax, 10);
+    cfg.strategyParameters = initialStrategyParameters();
+    // cfg.strategyParameters.betStyle = ;
+
+    // cfg.strategyParameters.betstyle = (BetStyle)cboBetStyle.SelectedIndex;
+    // cfg.strategyParameters.start_date = Convert.ToInt32(startdatePicker.Value.Date.ToString("yyyyMMdd"));
+    // cfg.strategyParameters.end_date   = Convert.ToInt32(enddatePicker.Value.Date.ToString("yyyyMMdd"));
+    // cfg.strategyParameters.gametype = (GameType)cboLeagueType.SelectedIndex;
+    // cfg.minBets = Convert.ToInt32(txtMinBets.Value);
+    // cfg.strategyParameters.sizingMethod = (SizingMethod)cboSizingMethod.SelectedIndex;
+    // cfg.strategyParameters.sizingMethodParameter = (float)txtSizingInput.Value;
+    // cfg.strategyParameters.portfolioAmount = (float)txtPortfolioAmount.Value;
+  };
+
   render() {
     const {
       league,
@@ -223,8 +266,12 @@ class HomePage extends React.Component {
           <Col md={9}>
             <ButtonToolbar className="menuButtonsContainer">
               <Button variant="link">Update Alerts</Button>
-              <Button variant="link">Tonight Mode</Button>
-              <Button variant="link">Run Simulation</Button>
+              <Button variant="link" onClick={() => this.onTonightMode()}>
+                Tonight Mode
+              </Button>
+              <Button variant="link" onClick={() => this.onRunSimulation()}>
+                Run Simulation
+              </Button>
               <Button variant="link" onClick={() => this.openAlertModal()}>
                 Modify Alerts Email
               </Button>

@@ -74,3 +74,15 @@ export const getEV = (style, valLine, valWin, valJuice, valPush) => {
     }
   }
 };
+
+export const initialStrategyParameters = () => {
+  const obj = {};
+  obj.startDate = null;
+  obj.endDate = null;
+  obj.betStyle = 0;
+  obj.gameType = 0;
+  obj.sizingMethod = 0;
+  obj.sizingMethodParameter = 100;
+  obj.portfolioAmount = 100000;
+  return obj;
+};
