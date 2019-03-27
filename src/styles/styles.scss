@@ -17,6 +17,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
 }
+.logo {
+  text-decoration: none;
+}
+.logo:hover {
+  text-decoration: none;
+}
 .pageContainer {
   background: #fff;
   border-radius: 5px;
@@ -29,7 +35,7 @@ body {
 .menuButtonsContainer {
   height: 56px;
   justify-content: flex-start;
-  button:last-child {
+  button:nth-child(4) {
     margin-left: auto;
   }
 }
@@ -144,6 +150,30 @@ body {
 
 .labelEV {
   line-height: 1.5;
+}
+
+.dataContainer {
+  margin-top: 20px;
+  max-width: calc(100% - 20px);
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.dataFilter {
+  margin-top: 10px;
+  > div {
+    margin-top: 10px;
+  }
+}
+
+.formCheck {
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+.form-check-input {
+  margin-top: 0;
 }
 
 @media (min-width: 576px) and (max-width: 768px) {

@@ -192,3 +192,12 @@ export const BET_STYLE_DATA = {
     { value: 'Spread', key: 'Spread' }
   ]
 };
+
+export const FILE_NAMES = {
+  0: 'NFLSignals',
+  1: 'NBASignals',
+  2: 'NCAAFSignals',
+  3: 'MLBSignals',
+  4: 'SPASignals',
+  5: 'NHLSignals'
+};

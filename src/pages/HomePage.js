@@ -13,6 +13,7 @@ import Tree from 'rc-tree';
 import 'rc-tree/assets/index.css';
 import CalculatorModal from '../components/CalculatorModal';
 import FormInlineComponent from '../components/FormInlineComponent';
+import MainHeader from '../components/Header';
 import {
   LEAGUE,
   BETTING_STYLE,
@@ -26,6 +27,7 @@ import {
   SIZING_MODEL,
   STARTING_MONEY,
   TREE_DATA
+  // FILE_NAMES
 } from '../utils/constants';
 import { loopTreeData, initialStrategyParameters } from '../utils/functions';
 
@@ -203,8 +205,6 @@ class HomePage extends React.Component {
     this.setState({ isOpenCalculatorModal: b });
   };
 
-  onTonightMode = () => {};
-
   onRunSimulation = () => {
     const {
       strategy,
@@ -212,8 +212,16 @@ class HomePage extends React.Component {
       numberRuleMax,
       startDate,
       endDate,
-      checkedKeys
+      checkedKeys,
+      betting,
+      league,
+      minBets,
+      sizeModel,
+      betAmount,
+      startingMoney
     } = this.state;
+    const { history } = this.props;
+
     const cfg = {};
     cfg.numStrategies = Number.parseInt(strategy, 10);
     if (
@@ -234,16 +242,61 @@ class HomePage extends React.Component {
     cfg.minNumOfRules = Number.parseInt(numberRuleMin, 10);
     cfg.maxNumOfRules = Number.parseInt(numberRuleMax, 10);
     cfg.strategyParameters = initialStrategyParameters();
-    // cfg.strategyParameters.betStyle = ;
+    cfg.strategyParameters.betStyle = betting;
+    cfg.strategyParameters.startDate = startDate;
+    cfg.strategyParameters.endDate = endDate;
+    cfg.strategyParameters.gametype = league;
+    cfg.minBets = minBets;
+    cfg.strategyParameters.sizingMethod = sizeModel;
+    cfg.strategyParameters.sizingMethodParameter = Number.parseFloat(betAmount);
+    cfg.strategyParameters.portfolioAmount = Number.parseFloat(startingMoney);
+    if (
+      cfg.strategyParameters.betStyle === 0 &&
+      cfg.strategyParameters.gametype === 3
+    ) {
+      alert("MLB can't use Spread bet style, please select a different one");
+      return;
+    }
+    if (
+      cfg.strategyParameters.betstyle !== 3 &&
+      cfg.strategyParameters.gametype === 4
+    ) {
+      alert(
+        'Soccer leagues use only moneyline bet style, please select a different one'
+      );
+      return;
+    }
+    if (
+      cfg.strategyParameters.betstyle === 3 &&
+      cfg.strategyParameters.gametype === 2
+    ) {
+      alert(
+        "NCAAF can't use Moneyline bet style, please select a different one"
+      );
+      return;
+    }
+    if (
+      cfg.strategyParameters.sizingMethod === 2 &&
+      cfg.strategyParameters.gametype === 2
+    ) {
+      alert(
+        'NCAAF can´t use Kelly bet sizing method, please select a different one'
+      );
+      return;
+    }
+    // const fileName = FILE_NAMES[league];
+    cfg.selectedRules = checkedKeys.slice(0);
+    cfg.requiredRules = [];
+    if (cfg.requiredRules.length > numberRuleMin) {
+      alert('Min rules should be at least equal to required rules.');
+      return;
+    }
 
-    // cfg.strategyParameters.betstyle = (BetStyle)cboBetStyle.SelectedIndex;
-    // cfg.strategyParameters.start_date = Convert.ToInt32(startdatePicker.Value.Date.ToString("yyyyMMdd"));
-    // cfg.strategyParameters.end_date   = Convert.ToInt32(enddatePicker.Value.Date.ToString("yyyyMMdd"));
-    // cfg.strategyParameters.gametype = (GameType)cboLeagueType.SelectedIndex;
-    // cfg.minBets = Convert.ToInt32(txtMinBets.Value);
-    // cfg.strategyParameters.sizingMethod = (SizingMethod)cboSizingMethod.SelectedIndex;
-    // cfg.strategyParameters.sizingMethodParameter = (float)txtSizingInput.Value;
-    // cfg.strategyParameters.portfolioAmount = (float)txtPortfolioAmount.Value;
+    console.log(cfg);
+    history.push({
+      pathname: '/run-simulation',
+      state: cfg
+    });
   };
 
   render() {
@@ -255,29 +308,18 @@ class HomePage extends React.Component {
       checkedKeys,
       isOpenCalculatorModal
     } = this.state;
+    const { history } = this.props;
     const formData = this.generateArray();
 
     return (
       <Container className="pageContainer">
-        <Row>
-          <Col md={3}>
-            <h1>Bets 2 Make</h1>
-          </Col>
-          <Col md={9}>
-            <ButtonToolbar className="menuButtonsContainer">
-              <Button variant="link">Update Alerts</Button>
-              <Button variant="link" onClick={() => this.onTonightMode()}>
-                Tonight Mode
-              </Button>
-              <Button variant="link" onClick={() => this.onRunSimulation()}>
-                Run Simulation
-              </Button>
-              <Button variant="link" onClick={() => this.openAlertModal()}>
-                Modify Alerts Email
-              </Button>
-            </ButtonToolbar>
-          </Col>
-        </Row>
+        <MainHeader
+          menus={[true, true, true, true]}
+          onRun={this.onRunSimulation}
+          onAlert={this.openAlertModal}
+          history={history}
+          league={league}
+        />
         <Row>
           <Col md={12}>
             <Row>

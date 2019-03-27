@@ -22,7 +22,6 @@ class FormInlineComponent extends React.Component {
 
   render() {
     const { data, onChange, stateId, value, additionalStyle } = this.props;
-    console.log(stateId, additionalStyle);
     return (
       <Form.Group>
         <Row>
