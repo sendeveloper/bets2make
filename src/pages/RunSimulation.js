@@ -1,6 +1,12 @@
 import React from 'react';
-import { Container, Col, Row, Form } from 'react-bootstrap';
+import { Container, Col, Row } from 'react-bootstrap';
 import MainHeader from '../components/Header';
+import ProfitLoss from '../components/ProfitLoss';
+import Drawdown from '../components/Drawdown';
+import ProfitBy from '../components/ProfitBy';
+import MonteCarlo from '../components/MonteCarlo';
+import Winning from '../components/Winning';
+import SimulateData from '../components/SimulateData';
 
 class RunSimulation extends React.Component {
   constructor(props) {
@@ -16,16 +22,27 @@ class RunSimulation extends React.Component {
     this.setState({ [id]: value });
   };
 
+  onLoadPortfolio = () => {
+    alert('onLoadPortfolio');
+  };
+
   render() {
     const { history } = this.props;
     return (
       <Container className="pageContainer">
         <MainHeader menus={[true, true, true]} history={history} />
-        <Row className="dataFilter">
-          <Col md={3} lg={2}>
-            <Form.Label className="formLabel">RunSimulation:</Form.Label>
+        <Row>
+          <Col lg={6}>
+            <ProfitLoss />
+            <Drawdown />
+            <ProfitBy />
+          </Col>
+          <Col lg={6}>
+            <MonteCarlo />
+            <Winning />
           </Col>
         </Row>
+        <SimulateData onLoadPortfolio={this.onLoadPortfolio} />
       </Container>
     );
   }
