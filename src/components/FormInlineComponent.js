@@ -6,20 +6,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'rc-input-number/assets/index.css';
 
 class FormInlineComponent extends React.Component {
-  numberFormat = e => {
-    const { data } = this.props;
-    return data.type === 'hex'
-      ? parseInt(e, 10)
-          .toString(16)
-          .toUpperCase()
-      : e;
-  };
-
-  numberParse = e => {
-    const { data } = this.props;
-    return data.type === 'hex' ? parseInt(e, 16) : e;
-  };
-
   render() {
     const { data, onChange, stateId, value, additionalStyle } = this.props;
     return (
@@ -49,8 +35,6 @@ class FormInlineComponent extends React.Component {
                     width: '100%'
                   }
                 }}
-                parser={e => this.numberParse(e)}
-                formatter={e => this.numberFormat(e)}
               />
             )}
             {data.type === 'text' && (

@@ -298,6 +298,13 @@ class HomePage extends React.Component {
     });
   };
 
+  showPortfolio = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: '/portfolio'
+    });
+  };
+
   render() {
     const {
       league,
@@ -355,7 +362,9 @@ class HomePage extends React.Component {
                   </Alert>
                 )}
                 <ButtonToolbar className="parameterButtonsContainer">
-                  <Button variant="link">Show Portfolio</Button>
+                  <Button variant="link" onClick={this.showPortfolio}>
+                    Show Portfolio
+                  </Button>
                   <Button
                     variant="link"
                     onClick={() => this.onCalcModalChange(true)}

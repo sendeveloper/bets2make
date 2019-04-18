@@ -7,94 +7,55 @@ import ProfitBy from '../components/ProfitBy';
 import MonteCarlo from '../components/MonteCarlo';
 import Winning from '../components/Winning';
 import SimulateData from '../components/SimulateData';
-import { getSimulationData, getSimulationGraphData } from '../utils/api';
 
-class RunSimulation extends React.Component {
+class Portfolio extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      loading: true,
-      tableData: [],
-      graphData: [],
-      selectedId: -1,
-      showingMonteDD: false
-    };
-  }
 
-  componentDidMount() {
-    const { history } = this.props;
-    const { state } = history.location;
-    if (state) {
-      getSimulationData(state, result => {
-        let tableData;
-        if (result) {
-          tableData = result.gdata;
-          this.loadGraphData(tableData[0].strategyId);
-          this.setState({ selectedId: 0 });
-        } else {
-          tableData = [];
-        }
-        this.setState({ tableData });
-      });
-    } else {
-      alert("Sorry, you don't have enough permission to visit this page");
-      history.push({ pathname: '/' });
+    const portfolioString = localStorage.getItem('portfolioData');
+    let portfolioData = [];
+    try {
+      portfolioData = portfolioString ? JSON.parse(portfolioString) : [];
+    } catch (e) {
+      console.log('parse error', e);
     }
+    this.state = {
+      portfolioData,
+      selectedId: 0
+    };
   }
 
   onChange = (id, value) => {
     this.setState({ [id]: value });
   };
 
-  onLoadPortfolio = () => {
+  onBackResult = () => {
     const { history } = this.props;
     const { state } = history.location;
-    history.push({
-      pathname: '/portfolio',
-      state
-    });
-  };
-
-  onTableClickRow = row => {
-    // isSelect, rowIndex, e
-    const { tableData } = this.state;
-    const id = tableData[row.id].strategyId;
-    this.setState({ selectedId: row.id });
-    this.loadGraphData(id);
-  };
-
-  onAddToPortfolio = () => {
-    const { selectedId, tableData, graphData } = this.state;
-    if (selectedId !== -1) {
-      const saveRow = Object.assign({}, tableData[selectedId]);
-      const portfolioString = localStorage.getItem('portfolioData');
-      saveRow.betsList = graphData;
-      try {
-        const portfolioData = portfolioString
-          ? JSON.parse(portfolioString)
-          : [];
-        portfolioData.push(saveRow);
-        localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
-      } catch (e) {
-        console.log(e);
-        localStorage.setItem('portfolioData', [saveRow]);
-      }
+    if (state) {
+      history.push({
+        pathname: '/run-simulation',
+        state
+      });
     } else {
-      alert('Please select graph');
+      alert("Sorry, you can't go to simulation page");
+      history.push({ pathname: '/' });
     }
   };
 
-  loadGraphData = id => {
-    this.setState({ loading: false });
-    getSimulationGraphData(id, result => {
-      let graphData;
-      if (result) {
-        graphData = result.gdata;
-      } else {
-        graphData = [];
-      }
-      this.setState({ graphData, loading: false });
-    });
+  onTableClickRow = row => {
+    this.setState({ selectedId: row.id });
+  };
+
+  onRemoveFromPortfolio = () => {
+    const { portfolioData, selectedId } = this.state;
+    if (selectedId !== -1) {
+      portfolioData.splice(selectedId, 1);
+      this.setState({ portfolioData });
+      localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+    } else {
+      alert('Please select graph');
+    }
   };
 
   generateChartData = (table, graph) => {
@@ -359,7 +320,8 @@ class RunSimulation extends React.Component {
 
   render() {
     const { history } = this.props;
-    const { tableData, graphData, selectedId, loading } = this.state;
+    const { state } = history.location;
+    const { portfolioData, selectedId } = this.state;
     const {
       newLine,
       maxSeries,
@@ -375,45 +337,42 @@ class RunSimulation extends React.Component {
       monteLabel,
       monteChart,
       monteExtend
-    } = this.generateChartData(tableData[selectedId], graphData);
+    } = this.generateChartData(
+      portfolioData[selectedId],
+      portfolioData[selectedId].betsList
+    );
+
     return (
       <Container className="pageContainer">
-        <MainHeader menus={[true, true, true]} history={history} />
-        {loading ? (
-          <Row>
-            <Col lg={12} className="loadingGraphData">
-              Loading...
-            </Col>
-          </Row>
-        ) : (
-          <Row>
-            <Col lg={6}>
-              <ProfitLoss newLine={newLine} maxSeries={maxSeries} />
-              <Drawdown newLineDD={newLineDD} />
-              <ProfitBy
-                newYearLine1={newYearLine1}
-                newYearLine2={newYearLine2}
-                yearKeys={yearKeys}
-                newMonthLine1={newMonthLine1}
-                newMonthLine2={newMonthLine2}
-                monthKeys={monthKeys}
-              />
-            </Col>
-            <Col lg={6}>
-              <MonteCarlo
-                monteLabel={monteLabel}
-                monteChart={monteChart}
-                monteExtend={monteExtend}
-              />
-              <Winning winPercent={winPercent} profitPercent={profitPercent} />
-            </Col>
-          </Row>
-        )}
+        <MainHeader menus={[true, true, false]} history={history} />
+        <Row>
+          <Col lg={6}>
+            <ProfitLoss newLine={newLine} maxSeries={maxSeries} />
+            <Drawdown newLineDD={newLineDD} />
+            <ProfitBy
+              newYearLine1={newYearLine1}
+              newYearLine2={newYearLine2}
+              yearKeys={yearKeys}
+              newMonthLine1={newMonthLine1}
+              newMonthLine2={newMonthLine2}
+              monthKeys={monthKeys}
+            />
+          </Col>
+          <Col lg={6}>
+            <MonteCarlo
+              monteLabel={monteLabel}
+              monteChart={monteChart}
+              monteExtend={monteExtend}
+            />
+            <Winning winPercent={winPercent} profitPercent={profitPercent} />
+          </Col>
+        </Row>
         <SimulateData
-          data={tableData}
-          portfolio={false}
-          onLoadPortfolio={this.onLoadPortfolio}
-          onAddToPortfolio={this.onAddToPortfolio}
+          data={portfolioData}
+          portfolio
+          showBackButton={!!state}
+          onBackResult={this.onBackResult}
+          onRemove={this.onRemoveFromPortfolio}
           onTableClickRow={this.onTableClickRow}
         />
       </Container>
@@ -421,4 +380,4 @@ class RunSimulation extends React.Component {
   }
 }
 
-export default RunSimulation;
+export default Portfolio;

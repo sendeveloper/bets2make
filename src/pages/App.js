@@ -8,6 +8,7 @@ import HomePage from './HomePage';
 import TonightGamePage from './TonightGamePage';
 import UpdateAlerts from './UpdateAlerts';
 import RunSimulation from './RunSimulation';
+import Portfolio from './Portfolio';
 import NotFoundPage from './NotFoundPage';
 
 class App extends React.Component {
@@ -17,6 +18,7 @@ class App extends React.Component {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/run-simulation" component={RunSimulation} />
+          <Route exact path="/portfolio" component={Portfolio} />
           <Route exact path="/update-alerts" component={UpdateAlerts} />
           <Route exact path="/tonight" component={TonightGamePage} />
           <Route path="/fuel-savings" component={FuelSavingsPage} />

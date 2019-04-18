@@ -119,7 +119,15 @@ class SimulateData extends React.Component {
   };
 
   render() {
-    const { onTableClickRow, onAddToPortfolio } = this.props;
+    const {
+      portfolio,
+      onTableClickRow,
+      onAddToPortfolio,
+      onLoadPortfolio,
+      onRemove,
+      onBackResult,
+      showBackButton
+    } = this.props;
     const tableData = this.getData();
     const selectRow = {
       mode: 'radio',
@@ -127,13 +135,20 @@ class SimulateData extends React.Component {
       clickToSelect: true,
       onSelect: onTableClickRow
     };
-    const { onLoadPortfolio } = this.props;
     return (
       <Row>
         <Col md={12} className="simulateContainer">
-          <Button variant="link" onClick={onLoadPortfolio}>
-            Load Portfolio
-          </Button>
+          {portfolio ? (
+            showBackButton && (
+              <Button variant="link" onClick={onBackResult}>
+                Back to Results
+              </Button>
+            )
+          ) : (
+            <Button variant="link" onClick={onLoadPortfolio}>
+              Load Portfolio
+            </Button>
+          )}
         </Col>
         <Col md={12} className="dataContainer">
           <BootstrapTable
@@ -142,9 +157,15 @@ class SimulateData extends React.Component {
             columns={columns}
             selectRow={selectRow}
           />
-          <Button variant="primary" onClick={onAddToPortfolio}>
-            Add to Portfolio
-          </Button>
+          {portfolio ? (
+            <Button variant="primary" onClick={onRemove}>
+              Remove from Portfolio
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={onAddToPortfolio}>
+              Add to Portfolio
+            </Button>
+          )}
         </Col>
       </Row>
     );
