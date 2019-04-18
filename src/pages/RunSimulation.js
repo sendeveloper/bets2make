@@ -29,8 +29,13 @@ class RunSimulation extends React.Component {
         let tableData;
         if (result) {
           tableData = result.gdata;
-          this.loadGraphData(tableData[0].strategyId);
-          this.setState({ selectedId: 0 });
+          if (tableData.length > 0) {
+            this.loadGraphData(tableData[0].strategyId);
+            this.setState({ selectedId: 0 });
+          } else {
+            alert(result.msg);
+            history.push({ pathname: '/' });
+          }
         } else {
           tableData = [];
         }
@@ -415,6 +420,7 @@ class RunSimulation extends React.Component {
           onLoadPortfolio={this.onLoadPortfolio}
           onAddToPortfolio={this.onAddToPortfolio}
           onTableClickRow={this.onTableClickRow}
+          selected={selectedId}
         />
       </Container>
     );

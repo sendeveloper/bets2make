@@ -374,6 +374,7 @@ class Portfolio extends React.Component {
           onBackResult={this.onBackResult}
           onRemove={this.onRemoveFromPortfolio}
           onTableClickRow={this.onTableClickRow}
+          selected={selectedId}
         />
       </Container>
     );

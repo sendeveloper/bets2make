@@ -126,14 +126,16 @@ class SimulateData extends React.Component {
       onLoadPortfolio,
       onRemove,
       onBackResult,
-      showBackButton
+      showBackButton,
+      selected
     } = this.props;
     const tableData = this.getData();
     const selectRow = {
       mode: 'radio',
       style: { background: '#DDD' },
       clickToSelect: true,
-      onSelect: onTableClickRow
+      onSelect: onTableClickRow,
+      selected: [selected]
     };
     return (
       <Row>
