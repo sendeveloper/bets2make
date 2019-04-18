@@ -237,6 +237,17 @@ body {
   margin-bottom: 60px;
 }
 
+.zoomButton {
+  position: absolute;
+  padding: 0;
+  top: 25px;
+  right: 25px;
+  img {
+    width: 25px;
+    height: 25px;
+  }
+}
+
 @media (min-width: 576px) and (max-width: 768px) {
   .container {
     max-width: 100%;
