@@ -1,89 +1,75 @@
 import React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import ReactHighcharts from 'react-highcharts';
+import { calcMaxMin } from '../utils/functions';
 
+const BASIC_CONFIG = {
+  chart: {
+    height: 450,
+    type: 'spline'
+  },
+  title: {
+    text: 'Monte Carlo'
+  },
+  colors: [],
+  xAxis: {
+    categories: [],
+    tickInterval: 10
+  },
+  yAxis: {
+    title: {
+      text: null
+    },
+    tickAmount: 8,
+    max: 30000,
+    min: -5000
+  },
+  series: []
+};
 class MonteCarlo extends React.Component {
-  constructor(props) {
-    super(props);
-    const config = {
-      chart: {
-        height: 450,
-        type: 'spline'
-      },
-      title: {
-        text: 'Monte Carlo'
-      },
-      colors: [],
-      xAxis: {
-        categories: [
-          100,
-          200,
-          300,
-          400,
-          500,
-          600,
-          700,
-          800,
-          900,
-          1000,
-          1200,
-          1300,
-          1300,
-          1400,
-          1500,
-          1600,
-          1700,
-          1800,
-          1900,
-          2000,
-          2400
-        ],
-        tickInterval: 10
-      },
-      yAxis: {
-        title: {
-          text: null
-        },
-        tickAmount: 8,
-        max: 30000,
-        min: -5000
-      },
-      series: []
-    };
-
-    const count = 20;
+  render() {
+    const { monteLabel, monteChart, monteExtend } = this.props;
+    const config = Object.assign({}, BASIC_CONFIG);
+    let min = 2147483647;
+    let max = -2147483648;
     // eslint-disable-next-line
-    for (let i = 0; i < count; i = i + 1) {
+    monteChart.map(eachChart => {
+      const { max: maxEach, min: minEach } = calcMaxMin(eachChart);
       const serie = {
         showInLegend: false,
-        data: this.generateData()
+        data: eachChart
       };
       config.series.push(serie);
-      if (i < count - 3) {
-        config.colors.push('#999999');
+      config.colors.push('#999999');
+      if (min > minEach) {
+        min = minEach;
       }
-    }
-    config.colors.push('#FF0000');
-    config.colors.push('#00FF00');
-    config.colors.push('#0000FF');
-    this.state = {
-      config: Object.assign({}, config)
-    };
-  }
-
-  generateData = () => {
-    const data = [];
+      if (max < maxEach) {
+        max = maxEach;
+      }
+    });
     // eslint-disable-next-line
-    for (let i = 0; i < 21; i = i + 1) {
-      const p = (i + 1) * 800;
-      const ran = 3000 + (i + 1) * 400;
-      data.push(Math.ceil(Math.random() * ran + p - 2000));
-    }
-    return data;
-  };
+    monteExtend.map(eachData => {
+      const { max: maxEach, min: minEach } = calcMaxMin(eachData.data);
+      const serie = {
+        showInLegend: false,
+        data: eachData.data
+      };
+      config.series.push(serie);
+      config.colors.push(eachData.color);
+      if (min > minEach) {
+        min = minEach;
+      }
+      if (max < maxEach) {
+        max = maxEach;
+      }
+    });
+    config.xAxis.categories = monteLabel;
+    config.xAxis.tickInterval =
+      monteLabel.length > 0 ? Math.floor(monteLabel.length / 2) : 1;
+    config.yAxis.max = max;
+    config.yAxis.min = min;
 
-  render() {
-    const { config } = this.state;
     return (
       <Row>
         <Col md={12}>

@@ -1,41 +1,7 @@
 import React from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
-
-const data = [
-  {
-    id: 1,
-    league: 'NFL',
-    betting_style: 'Spread',
-    bet_sizing: 'Fixed $100',
-    strategy_name: '',
-    signal_names: 'Spread +8 or Less, Opp Ya...',
-    total_p_l: '16,400',
-    dd: '-5,000',
-    bets: '2,444',
-    win_percent: '53.36',
-    normalized_win: '53.36',
-    straight_up: '36.67',
-    pf: '1.1439',
-    shape: '1.07'
-  },
-  {
-    id: 2,
-    league: 'NFL',
-    betting_style: 'Spread',
-    bet_sizing: 'Fixed $200',
-    strategy_name: '',
-    signal_names: 'Spread +8 or Less, Opp Ya...',
-    total_p_l: '12,400',
-    dd: '-2,000',
-    bets: '1,444',
-    win_percent: '54.36',
-    normalized_win: '57.36',
-    straight_up: '38.67',
-    pf: '1.2439',
-    shape: '3.07'
-  }
-];
+import { LEAGUE, BETTING_STYLE, SIZING_MODEL } from '../utils/constants';
 
 const columns = [
   {
@@ -102,29 +68,64 @@ const columns = [
     dataField: 'shape',
     text: 'Shape',
     sort: true
-  },
-  {
-    dataField: 'portfolio',
-    text: 'Portfolio',
-    sort: true
   }
 ];
 
-// const selectRow = {
-//   mode: 'checkbox',
-//   style: { background: '#CCC' },
-//   hideSelectAll: true,
-//   title: 'Active'
-// };
-
 class SimulateData extends React.Component {
-  onDoubleClick = (e, row, rowIndex) => {
-    console.log(e, row, rowIndex);
+  getData = () => {
+    const { data } = this.props;
+    const tableData = [];
+    // eslint-disable-next-line
+    data.map((each, index) => {
+      const row = {};
+      row.id = index;
+      row.league = LEAGUE.data[each.StrategyParameters.gametype].value;
+      row.betting_style =
+        BETTING_STYLE.data[each.StrategyParameters.betstyle].value;
+      row.bet_sizing =
+        SIZING_MODEL.data[each.StrategyParameters.sizingMethod].value +
+        `0${each.StrategyParameters.sizingMethodParameter}`.slice(-2);
+      row.strategy_name = `${each.strategyName} `;
+      row.signal_names = each.strategyRulesNames;
+      row.total_p_l = each.sum;
+      row.dd = each.dd;
+      row.bets = each.win + each.loss;
+      if (each.betsListCnt !== 0) {
+        row.win_percent = ((each.win * 100) / row.bets).toFixed(2);
+        row.normalized_win = (
+          (each.amountWins * 100) /
+          (each.amountWins + Math.abs(each.amountLoss))
+        ).toFixed(2);
+      } else {
+        row.win_percent = '0.00';
+        row.normalized_win = '0.00';
+      }
+
+      row.straight_up = (
+        (each.straight_up_win * 100) /
+        (each.win + each.loss)
+      ).toFixed(2);
+
+      row.pf = 100;
+      if (each.amountLoss !== 0) {
+        row.pf = (each.amountWins / Math.abs(each.amountLoss)).toFixed(2);
+      }
+
+      row.shape = each.sharpe.toFixed(2);
+
+      tableData.push(row);
+    });
+    return tableData;
   };
 
   render() {
-    const rowEvents = {
-      onDoubleClick: this.onDoubleClick
+    const { onTableClickRow, onAddToPortfolio } = this.props;
+    const tableData = this.getData();
+    const selectRow = {
+      mode: 'radio',
+      style: { background: '#DDD' },
+      clickToSelect: true,
+      onSelect: onTableClickRow
     };
     const { onLoadPortfolio } = this.props;
     return (
@@ -137,10 +138,13 @@ class SimulateData extends React.Component {
         <Col md={12} className="dataContainer">
           <BootstrapTable
             keyField="id"
-            data={data}
+            data={tableData}
             columns={columns}
-            rowEvents={rowEvents}
+            selectRow={selectRow}
           />
+          <Button variant="primary" onClick={onAddToPortfolio}>
+            Add to Portfolio
+          </Button>
         </Col>
       </Row>
     );

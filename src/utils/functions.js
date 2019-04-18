@@ -86,3 +86,22 @@ export const initialStrategyParameters = () => {
   obj.portfolioAmount = 100000;
   return obj;
 };
+
+export const calcMaxMin = array => {
+  if (array) {
+    let max = array[0];
+    let min = array[0];
+    // eslint-disable-next-line
+    array.map(each => {
+      if (max < each) {
+        max = each;
+      }
+      if (min > each) {
+        min = each;
+      }
+    });
+    return { max, min };
+  } else {
+    return { max: 0, min: 0 };
+  }
+};

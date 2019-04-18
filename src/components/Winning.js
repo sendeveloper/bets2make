@@ -101,15 +101,39 @@ class Winning extends React.Component {
 
   render() {
     const { config1, config2 } = this.state;
+    const { winPercent, profitPercent } = this.props;
+    const winConfig = Object.assign({}, config1);
+    const profitConfig = Object.assign({}, config2);
+    let winLabel;
+    let profitLabel;
+    if (winPercent === 100) {
+      winLabel = winPercent;
+      winConfig.series[0].data[0].y = winLabel;
+      winConfig.series[0].data[1].y = 100 - winPercent;
+    } else {
+      winLabel = Math.round(winPercent * 100) / 100;
+      winConfig.series[0].data[0].y = winLabel;
+      winConfig.series[0].data[1].y = 100 - winLabel;
+    }
+    if (profitPercent === 100) {
+      profitLabel = profitPercent;
+      profitConfig.series[0].data[0].y = profitLabel;
+      profitConfig.series[0].data[1].y = 100 - profitPercent;
+    } else {
+      profitLabel = Math.round(profitPercent * 100) / 100;
+      profitConfig.series[0].data[0].y = profitLabel;
+      profitConfig.series[0].data[1].y = 100 - profitLabel;
+    }
+
     return (
       <Row>
         <Col lg={6} className="pieContainer">
-          <ReactHighcharts config={config1} />
-          <span>53.36%</span>
+          <ReactHighcharts config={winConfig} />
+          <span>{winLabel}%</span>
         </Col>
         <Col lg={6} className="pieContainer">
-          <ReactHighcharts config={config2} />
-          <span>53.36%</span>
+          <ReactHighcharts config={profitConfig} />
+          <span>{profitLabel}%</span>
         </Col>
       </Row>
     );

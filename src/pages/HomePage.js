@@ -292,7 +292,6 @@ class HomePage extends React.Component {
       return;
     }
 
-    console.log(cfg);
     history.push({
       pathname: '/run-simulation',
       state: cfg

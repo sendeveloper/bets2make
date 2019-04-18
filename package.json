@@ -38,6 +38,7 @@
   "author": "Obaro",
   "license": "MIT",
   "dependencies": {
+    "axios": "0.18.0",
     "bootstrap": "4.3.1",
     "connected-react-router": "4.4.1",
     "object-assign": "4.1.1",

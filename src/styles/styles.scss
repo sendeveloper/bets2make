@@ -160,6 +160,28 @@ body {
   table {
     thead {
       background: #ccc;
+      display: block;
+    }
+    tbody {
+      display: block;
+      overflow: auto;
+      max-height: 300px;
+    }
+    th,
+    td {
+      min-width: 70px;
+      max-width: 70px;
+      word-break: break-all;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      min-width: 90px;
+      max-width: 90px;
+    }
+    th:nth-child(6),
+    td:nth-child(6) {
+      min-width: 150px;
+      max-width: 150px;
     }
   }
   .table-bordered td {
@@ -207,6 +229,12 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+}
+.loadingGraphData {
+  text-align: center;
+  font-size: 40px;
+  margin-top: 60px;
+  margin-bottom: 60px;
 }
 
 @media (min-width: 576px) and (max-width: 768px) {
