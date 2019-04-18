@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Col, Row } from 'react-bootstrap';
+import { Container, Col, Row, Button } from 'react-bootstrap';
 import MainHeader from '../components/Header';
 import ProfitLoss from '../components/ProfitLoss';
 import Drawdown from '../components/Drawdown';
@@ -330,6 +330,7 @@ class GraphPage extends React.Component {
   };
 
   render() {
+    const { showingMonteDD } = this.state;
     const {
       history,
       tableData,
@@ -383,6 +384,21 @@ class GraphPage extends React.Component {
                 />
               </Col>
               <Col lg={6}>
+                {showingMonteDD ? (
+                  <Button
+                    variant="link"
+                    onClick={() => this.setState({ showingMonteDD: false })}
+                  >
+                    Show drawdown
+                  </Button>
+                ) : (
+                  <Button
+                    variant="link"
+                    onClick={() => this.setState({ showingMonteDD: true })}
+                  >
+                    Show montecardo
+                  </Button>
+                )}
                 <MonteCarlo
                   monteLabel={monteLabel}
                   monteChart={monteChart}

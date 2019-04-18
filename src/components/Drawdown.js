@@ -87,11 +87,7 @@ class Drawdown extends React.Component {
       <Row>
         <Col md={12} style={{ position: 'relative' }}>
           <ReactHighcharts config={config} />
-          <Button
-            variant="variant"
-            onClick={this.onZoom}
-            className="zoomButton"
-          >
+          <Button variant="light" onClick={this.onZoom} className="zoomButton">
             <img src="../images/zoom.png" alt="zoom" />
           </Button>
         </Col>
