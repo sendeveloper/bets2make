@@ -84,7 +84,7 @@ class SimulateData extends React.Component {
         BETTING_STYLE.data[each.StrategyParameters.betstyle].value;
       row.bet_sizing =
         SIZING_MODEL.data[each.StrategyParameters.sizingMethod].value +
-        `0${each.StrategyParameters.sizingMethodParameter}`.slice(-2);
+        each.StrategyParameters.sizingMethodParameter;
       row.strategy_name = `${each.strategyName} `;
       row.signal_names = each.strategyRulesNames;
       row.total_p_l = each.sum;
@@ -112,7 +112,6 @@ class SimulateData extends React.Component {
       }
 
       row.shape = each.sharpe.toFixed(2);
-
       tableData.push(row);
     });
     return tableData;

@@ -95,7 +95,7 @@ class TonightGamePage extends React.Component {
     };
     return (
       <Container className="pageContainer">
-        <MainHeader menus={[true, true]} history={history} />
+        <MainHeader menus={[]} history={history} />
         <Row>
           <Col md={12} className="dataContainer">
             <i>Double click to select a game</i>

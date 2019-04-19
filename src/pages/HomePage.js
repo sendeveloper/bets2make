@@ -205,7 +205,7 @@ class HomePage extends React.Component {
     this.setState({ isOpenCalculatorModal: b });
   };
 
-  onRunSimulation = () => {
+  generateCFG = errorCheck => {
     const {
       strategy,
       numberRuleMin,
@@ -220,23 +220,26 @@ class HomePage extends React.Component {
       betAmount,
       startingMoney
     } = this.state;
-    const { history } = this.props;
 
     const cfg = {};
     cfg.numStrategies = Number.parseInt(strategy, 10);
     if (
+      errorCheck &&
       Number.parseInt(numberRuleMax, 10) < Number.parseInt(numberRuleMin, 10)
     ) {
       alert('Please select correct min and max rules.');
-      return;
+      return null;
     }
-    if (checkedKeys.length < numberRuleMin) {
+    if (errorCheck && checkedKeys.length < numberRuleMin) {
       alert('Please select more rules.');
-      return;
+      return null;
     }
-    if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+    if (
+      errorCheck &&
+      new Date(startDate).getTime() > new Date(endDate).getTime()
+    ) {
       alert('Please check start and end dates.');
-      return;
+      return null;
     }
     cfg.testsPerGeneration = 50;
     cfg.minNumOfRules = Number.parseInt(numberRuleMin, 10);
@@ -251,51 +254,73 @@ class HomePage extends React.Component {
     cfg.strategyParameters.sizingMethodParameter = Number.parseFloat(betAmount);
     cfg.strategyParameters.portfolioAmount = Number.parseFloat(startingMoney);
     if (
+      errorCheck &&
       cfg.strategyParameters.betStyle === 0 &&
       cfg.strategyParameters.gametype === 3
     ) {
       alert("MLB can't use Spread bet style, please select a different one");
-      return;
+      return null;
     }
     if (
+      errorCheck &&
       cfg.strategyParameters.betstyle !== 3 &&
       cfg.strategyParameters.gametype === 4
     ) {
       alert(
         'Soccer leagues use only moneyline bet style, please select a different one'
       );
-      return;
+      return null;
     }
     if (
+      errorCheck &&
       cfg.strategyParameters.betstyle === 3 &&
       cfg.strategyParameters.gametype === 2
     ) {
       alert(
         "NCAAF can't use Moneyline bet style, please select a different one"
       );
-      return;
+      return null;
     }
     if (
+      errorCheck &&
       cfg.strategyParameters.sizingMethod === 2 &&
       cfg.strategyParameters.gametype === 2
     ) {
       alert(
         'NCAAF can´t use Kelly bet sizing method, please select a different one'
       );
-      return;
+      return null;
     }
     // const fileName = FILE_NAMES[league];
     cfg.selectedRules = checkedKeys.slice(0);
     cfg.requiredRules = [];
-    if (cfg.requiredRules.length > numberRuleMin) {
+    if (errorCheck && cfg.requiredRules.length > numberRuleMin) {
       alert('Min rules should be at least equal to required rules.');
-      return;
+      return null;
     }
+    return cfg;
+  };
 
-    history.push({
-      pathname: '/run-simulation',
-      state: cfg
-    });
+  onRunSimulation = () => {
+    const { history } = this.props;
+    const cfg = this.generateCFG(true);
+    if (cfg != null) {
+      history.push({
+        pathname: '/run-simulation',
+        state: cfg
+      });
+    }
+  };
+
+  onUpdateAlert = () => {
+    const { history } = this.props;
+    const cfg = this.generateCFG(false);
+    if (cfg != null) {
+      history.push({
+        pathname: '/update-alerts',
+        state: cfg
+      });
+    }
   };
 
   showPortfolio = () => {
@@ -322,6 +347,7 @@ class HomePage extends React.Component {
         <MainHeader
           menus={[true, true, true, true]}
           onRun={this.onRunSimulation}
+          onUpdate={this.onUpdateAlert}
           onAlert={this.openAlertModal}
           history={history}
           league={league}

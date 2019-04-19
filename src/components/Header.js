@@ -3,11 +3,6 @@ import { Link } from 'react-router-dom';
 import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 
 class Header extends React.Component {
-  onUpdateAlerts = () => {
-    const { history } = this.props;
-    history.push('/update-alerts');
-  };
-
   onTonightMode = () => {
     const { history, league } = this.props;
     if (league) {
@@ -18,7 +13,7 @@ class Header extends React.Component {
   };
 
   render() {
-    const { onRun, onAlert, menus } = this.props;
+    const { onRun, onUpdate, onAlert, menus } = this.props;
     return (
       <Row>
         <Col md={3}>
@@ -29,7 +24,7 @@ class Header extends React.Component {
         <Col md={9}>
           <ButtonToolbar className="menuButtonsContainer">
             {menus[0] && (
-              <Button variant="link" onClick={() => this.onUpdateAlerts()}>
+              <Button variant="link" onClick={onUpdate && onUpdate}>
                 Update Alerts
               </Button>
             )}

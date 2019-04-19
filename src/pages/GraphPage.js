@@ -397,7 +397,7 @@ class GraphPage extends React.Component {
 
     return (
       <Container className="pageContainer">
-        <MainHeader menus={[true, true, !portfolio]} history={history} />
+        <MainHeader menus={[false, false, !portfolio]} history={history} />
         {loading ? (
           <Row>
             <Col lg={12} className="loadingGraphData">

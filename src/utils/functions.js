@@ -1,5 +1,6 @@
 import React from 'react';
 import { TreeNode } from 'rc-tree';
+import { BET_STYLE, SIZING_METHOD } from './constants';
 
 export const loopTreeData = data => {
   const str = data.split('|');
@@ -181,4 +182,187 @@ export const monteDrawdown = (values, stepNum, num, accountSize) => {
     distributionPoints,
     cumulativePoints
   };
+};
+
+export const getMatchingBets = (selectedRulesNames, cfg, matches) => {
+  const bets = [];
+  const selectedRules = selectedRulesNames.split(',');
+  const ruleIndexes = [];
+  // eslint-disable-next-line
+  selectedRules.map(each => {
+    const pos = cfg.rulesTitles.indexOf(each);
+    if (pos !== -1) {
+      ruleIndexes.push(pos);
+    }
+  });
+  if (matches) {
+    // eslint-disable-next-line
+    matches.map(match => {
+      let rulesMatch = true;
+      // eslint-disable-next-line
+      ruleIndexes.map(index => {
+        if (match.signal[index] === 0) {
+          rulesMatch = false;
+        }
+      });
+      if (rulesMatch) {
+        bets.push(match);
+      }
+    });
+  }
+  return bets;
+};
+
+export const addBet = (evCalculator, bet) => {
+  const tempEV = JSON.parse(JSON.stringify(evCalculator));
+  tempEV.totalGames += 1;
+  if (tempEV.bet.MATCH_WON) {
+    tempEV.wonGamesML += 1;
+  }
+  if (bet.PT === bet.PTA) {
+    tempEV.pushML += 1;
+  }
+  tempEV.bets.push(bet);
+  if (!Object.keys(tempEV.spreadTotalGames).includes(bet.SPREAD)) {
+    tempEV.spreadTotalGames[bet.SPREAD] = 0;
+  }
+  tempEV.spreadTotalGames[bet.SPREAD] += 1;
+  if (bet.SPREAD + bet.PT > bet.PTA) {
+    if (!Object.keys(tempEV.spreadWon).includes(bet.SPREAD)) {
+      tempEV.spreadWon[bet.SPREAD] = 0;
+    }
+    tempEV.spreadWon[bet.SPREAD] += 1;
+  }
+  if (bet.PTA === bet.SPREAD + bet.PT) {
+    if (!Object.keys(tempEV.spreadPush).includes(bet.SPREAD)) {
+      tempEV.spreadPush[bet.SPREAD] = 0;
+    }
+    tempEV.spreadPush[bet.SPREAD] += 1;
+  }
+  return tempEV;
+};
+
+const CalcEV = (style, valLine, valWin, valJuice, valPush) => {
+  if (style === BET_STYLE.moneyline) {
+    if (valLine === 0) return 0;
+    if (valLine > 0)
+      return valWin * (100 * (valLine / 100)) - (1 - (valWin + valPush)) * 100;
+    else
+      return (
+        valWin * (100 / (Math.Abs(valLine) / 100)) -
+        (1 - (valWin + valPush)) * 100
+      );
+  } else {
+    if (valJuice === 0) return 0;
+
+    if (valJuice > 0)
+      return valWin * (100 * (valJuice / 100)) - (1 - (valWin + valPush)) * 100;
+    else
+      return (
+        valWin * (100 / (Math.Abs(valJuice) / 100)) -
+        (1 - (valWin + valPush)) * 100
+      );
+  }
+};
+
+export const getBestStyle = (evCalculator, bet) => {
+  const {
+    spreadWon,
+    spreadTotalGames,
+    spreadPush,
+    wonGamesML,
+    pushML,
+    totalGames
+  } = evCalculator;
+  let wonGamesSpread = 0;
+  let totalGamesSpread = 0;
+  let pushSpread = 0;
+  // eslint-disable-next-line
+  spreadWon.map(each => {
+    if (each.Key >= bet.SPREAD) {
+      wonGamesSpread += each.Value;
+    }
+  });
+  // eslint-disable-next-line
+  spreadTotalGames.map(each => {
+    if (each.Key >= bet.SPREAD) {
+      totalGamesSpread += each.Value;
+    }
+  });
+  // eslint-disable-next-line
+  spreadPush.map(each => {
+    if (each.Key >= bet.SPREAD) {
+      pushSpread += each.Value;
+    }
+  });
+  const divWonS =
+    totalGamesSpread === 0 ? 0 : wonGamesSpread / totalGamesSpread;
+  const divPushS = totalGamesSpread === 0 ? 0 : pushSpread / totalGamesSpread;
+  const divWonM = totalGames === 0 ? 0 : wonGamesML / totalGames;
+  const divPushM = totalGames === 0 ? 0 : pushML / totalGames;
+
+  const evSpread = CalcEV(
+    BET_STYLE.spread,
+    bet.ML,
+    divWonS,
+    bet.SPREAD_VIG,
+    divPushS
+  );
+  const evML = CalcEV(BET_STYLE.moneyline, bet.ML, divWonM, 0, divPushM);
+
+  if (evSpread >= evML) {
+    return BET_STYLE.spread;
+  }
+  return BET_STYLE.moneyline;
+};
+
+export const calcBetSize = (strategy, bet, portfolioSize, betStyle) => {
+  let calculator = '0';
+
+  switch (strategy.sizingMethod) {
+    case SIZING_METHOD.FixedDollar:
+      calculator = `$ ${strategy.sizingMethodParameter.toString()}`;
+      return { ret: strategy.sizingMethodParameter, calculator };
+
+    case SIZING_METHOD.FixedPercentage:
+      calculator = `${strategy.sizingMethodParameter.toString()} %`;
+      return {
+        ret: (strategy.sizingMethodParameter * portfolioSize) / 100.0,
+        calculator
+      };
+
+    case SIZING_METHOD.Kelly: {
+      calculator = '0 %';
+
+      // calculate kelly value
+      let winPercent = 100.0 / (bet.ML + 100.0);
+      if (bet.ML < 0)
+        winPercent = Math.Abs(bet.ML) / (Math.Abs(bet.ML) + 100.0);
+
+      // win value is always 1 except in moneyline
+      let winValue = 2;
+      if (betStyle === BET_STYLE.moneyline) {
+        winValue = 1.0 / (bet.ML / -100.0) + 1;
+        if (bet.ML > 0) winValue = bet.ML / 100.0 + 1;
+      }
+
+      const kelly =
+        (winValue - 1) * winPercent - (1 - winPercent) / (winValue - 1);
+
+      if (kelly <= 0) return { ret: 0, calculator };
+
+      calculator = `${(kelly * strategy.sizingMethodParameter).toString()} %`;
+
+      let portfolioBet = kelly * strategy.sizingMethodParameter * portfolioSize;
+      if (portfolioBet < 1) {
+        portfolioBet = 0;
+        calculator = '0 %';
+      }
+      return { ret: portfolioBet, calculator };
+    }
+    default:
+      break;
+  }
+
+  return { ret: 0, calculator };
 };

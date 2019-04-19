@@ -29,6 +29,14 @@ export const LEAGUE = {
   ]
 };
 
+export const BET_STYLE = {
+  spread: 0,
+  over: 1,
+  under: 2,
+  moneyline: 3,
+  best: 4
+};
+
 export const BETTING_STYLE = {
   title: 'Betting Style',
   type: 'select',
@@ -141,6 +149,12 @@ export const BET_AMOUNT = [
   }
 ];
 
+export const SIZING_METHOD = {
+  FixedDollar: 0,
+  FixedPercentage: 1,
+  Kelly: 2
+};
+
 export const SIZING_MODEL = {
   title: 'Bet Sizing Method:',
   type: 'select',
@@ -183,6 +197,15 @@ export const TREE_DATA = [
   GROUPS_SPA,
   GROUPS_NHL
 ];
+
+export const GAME_TYPE = {
+  NFL: 0,
+  NBA: 1,
+  NCAAF: 2,
+  MLB: 3,
+  SPA: 4,
+  NHL: 5
+};
 
 export const BET_STYLE_DATA = {
   title: 'Bet Style:',

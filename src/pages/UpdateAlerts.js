@@ -1,48 +1,22 @@
 import React from 'react';
-import { Container, Col, Row, Form } from 'react-bootstrap';
+import { Container, Col, Row, Form, Button } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import InputNumber from 'rc-input-number';
 import MainHeader from '../components/Header';
 import 'rc-input-number/assets/index.css';
-
-const data = [
-  {
-    id: 1,
-    date: '2018/03/05',
-    league: 'league 1',
-    team: 'a',
-    opponent: 'b',
-    betting_style: 'Betting 1',
-    moneyline: 'c',
-    spread: 'd',
-    spread_vig: 'e',
-    over_under: 'f',
-    ou_vig: 'g',
-    strategy_name: 'S Name 1',
-    strategy_rules: 'S Rules 1',
-    bet_amount: 'Bet Amount 1',
-    bet_sizing: 'Bet Sizing 1',
-    bet_size_calculator: 'Bt Size Calculator 1'
-  },
-  {
-    id: 2,
-    date: '2018/03/06',
-    league: 'league 2',
-    team: 'aa',
-    opponent: 'bb',
-    betting_style: 'Betting 2',
-    moneyline: 'cc',
-    spread: 'dd',
-    spread_vig: 'ee',
-    over_under: 'ff',
-    ou_vig: 'gg',
-    strategy_name: 'S Name 2',
-    strategy_rules: 'S Rules 2',
-    bet_amount: 'Bet Amount 2',
-    bet_sizing: 'Bet Sizing 2',
-    bet_size_calculator: 'Bt Size Calculator 2'
-  }
-];
+import {
+  getMatchingBets,
+  getBestStyle,
+  calcBetSize,
+  addBet
+} from '../utils/functions';
+import {
+  LEAGUE,
+  GAME_TYPE,
+  TREE_DATA,
+  BETTING_STYLE,
+  SIZING_MODEL
+} from '../utils/constants';
 
 const columns = [
   {
@@ -118,33 +92,178 @@ const columns = [
   }
 ];
 
+// From Restful API
+const GAME_CACHE_INSTANCE = {
+  historyRawData: [],
+  tonightRawData: [],
+  updatesRawData: []
+};
+
 class UpdateAlerts extends React.Component {
   constructor(props) {
     super(props);
+
+    const portfolioString = localStorage.getItem('portfolioData');
+    let portfolioData = [];
+    try {
+      portfolioData = portfolioString ? JSON.parse(portfolioString) : [];
+    } catch (e) {
+      console.log('parse error', e);
+    }
     this.state = {
+      portfolioData,
       size: 100000,
       betSizing: 0,
-      betInput: 1
+      betInput: 1,
+      checked: false
     };
   }
-
-  onDoubleClick = (e, row, rowIndex) => {
-    console.log(e, row, rowIndex);
-  };
 
   onChange = (id, value) => {
     this.setState({ [id]: value });
   };
 
+  copyData = () => {};
+
+  onChangeCheck = e => {
+    this.setState({ checked: e.currentTarget.value });
+  };
+
+  generateBetAlerts = (strategy, cfg) => {
+    const betAlerts = [];
+    const gamesCache = GAME_CACHE_INSTANCE;
+    let evCalculator = {
+      totalGames: 0,
+      wonGamesML: 0,
+      pushML: 0,
+      spreadWon: [],
+      spreadTotalGames: [],
+      spreadPush: []
+    };
+    const matchingBets = getMatchingBets(
+      strategy.strategyRulesNames,
+      cfg,
+      gamesCache.tonightRawData[strategy.StrategyParameters.gametype]
+    );
+    const matchingBetsUpdates = getMatchingBets(
+      strategy.strategyRulesNames,
+      cfg,
+      gamesCache.updatesRawData[strategy.StrategyParameters.gametype]
+    );
+    // eslint-disable-next-line
+    matchingBets.map(each => {
+      evCalculator = addBet(evCalculator, each);
+    });
+    // eslint-disable-next-line
+    matchingBetsUpdates.map(each => {
+      evCalculator = addBet(evCalculator, each);
+    });
+    const tonightMatchingBets = getMatchingBets(
+      strategy.strategyRulesNames,
+      cfg,
+      gamesCache.tonightRawData[strategy.StrategyParameters.gametype]
+    );
+    // eslint-disable-next-line
+    tonightMatchingBets.map(match => {
+      if (match.DATE >= new Date('YYYYMMDD')) {
+        betAlerts.push({
+          strategy,
+          bet: match,
+          recommendedBetStyle: getBestStyle(evCalculator, match)
+        });
+      }
+    });
+    return betAlerts;
+  };
+
+  generateData = () => {
+    const { history } = this.props;
+    const { state } = history.location;
+    const cfg = JSON.parse(JSON.stringify(state));
+    const { portfolioData } = this.state;
+    let betAlerts = [];
+    const str = TREE_DATA[cfg.strategyParameters.gametype].split('|');
+    let array = [];
+    // eslint-disable-next-line
+    str.map(item => {
+      const itemArray = item.split(';');
+      array = [...array, ...itemArray.slice(1)];
+    });
+    cfg.rulesTitles = array;
+    // eslint-disable-next-line
+    portfolioData.map(each => {
+      if (each.isActive) {
+        betAlerts = [...betAlerts, ...this.generateBetAlerts(each, cfg)];
+      }
+    });
+    return betAlerts;
+  };
+
+  refreshItems = () => {
+    const { checked, size, betSizing, betInput } = this.state;
+    const listBets = [];
+    const alerts = this.generateData();
+    // eslint-disable-next-line
+    alerts.map((alert, index) => {
+      const item = {};
+      if (alert.bet.DATE <= new Date('YYYYMMDD') || checked) {
+        item.id = index;
+        item.date = alert.bet.DATE;
+        if (alert.strategy.strategyParameters.gametype !== GAME_TYPE.SPA) {
+          item.league =
+            LEAGUE.data[alert.strategy.strategyParameters.gametype].value;
+        } else {
+          item.league = alert.bet.LEAGUE;
+        }
+        item.team = alert.bet.TEAM;
+        item.opponent = alert.bet.OPPONENT;
+        item.betting_style = BETTING_STYLE.data[
+          alert.strategy.strategyParameters.betStyle
+        ].value.toUpperCase();
+        item.moneyline = alert.bet.ML.toString();
+        item.spread = alert.bet.SPREAD.toString();
+        item.spread_vig = alert.bet.SPREAD_VIG.toString();
+        item.over_under = alert.bet.OU.toString();
+        item.ou_vig = alert.bet.OU_OVER.toString();
+        item.strategy_name = alert.strategy.strategyName;
+        item.strategy_rules = alert.strategy.selectedRules;
+
+        const parameters = Object.assign({}, alert.strategy.strategyParameters);
+
+        if (betSizing !== 0) {
+          parameters.sizingMethod = betSizing - 1;
+          parameters.sizingMethodParameter = betInput;
+        }
+        const { ret, calculator } = calcBetSize(
+          parameters,
+          alert.bet,
+          size,
+          alert.strategy.strategyParameters.betStyle
+        );
+        item.bet_amount = `$ ${ret.toString()}`;
+        item.bet_sizing =
+          SIZING_MODEL.data[parameters].value + parameters.toString();
+        item.bet_size_calculator = calculator;
+
+        listBets.push(item);
+      }
+    });
+
+    return listBets;
+  };
+
   render() {
     const { history } = this.props;
-    const { size, betSizing, betInput } = this.state;
-    const rowEvents = {
-      onDoubleClick: this.onDoubleClick
+    const { size, betSizing, betInput, checked } = this.state;
+    const data = this.refreshItems();
+    const selectRow = {
+      mode: 'radio',
+      style: { background: '#DDD' },
+      clickToSelect: true
     };
     return (
       <Container className="pageContainer">
-        <MainHeader menus={[true, true]} history={history} />
+        <MainHeader menus={[]} history={history} />
         <Row className="dataFilter">
           <Col md={3} lg={2}>
             <Form.Label className="formLabel">Portfolio Size:</Form.Label>
@@ -227,6 +346,8 @@ class UpdateAlerts extends React.Component {
               type="checkbox"
               label="View whole week"
               className="formCheck"
+              value={checked}
+              onChange={this.onChangeCheck}
             />
           </Col>
         </Row>
@@ -236,8 +357,13 @@ class UpdateAlerts extends React.Component {
               keyField="id"
               data={data}
               columns={columns}
-              rowEvents={rowEvents}
+              selectRow={selectRow}
             />
+          </Col>
+          <Col md={4}>
+            <Button variant="link" onClick={this.copyData}>
+              Copy Data
+            </Button>
           </Col>
         </Row>
       </Container>
