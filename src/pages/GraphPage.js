@@ -43,11 +43,19 @@ class GraphPage extends React.Component {
 
   onTableClickRow = row => {
     // isSelect, rowIndex, e
-    const { portfolio, tableData, onSelectId, loadGraphData } = this.props;
-    const id = tableData[row.id].strategyId;
-    onSelectId(row.id);
-    if (!portfolio) {
-      loadGraphData(id);
+    const {
+      selectedId,
+      portfolio,
+      tableData,
+      onSelectId,
+      loadGraphData
+    } = this.props;
+    if (selectedId !== row.id) {
+      const id = tableData[row.id].strategyId;
+      onSelectId(row.id);
+      if (!portfolio) {
+        loadGraphData(id);
+      }
     }
   };
 
