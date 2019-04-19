@@ -330,6 +330,15 @@ class HomePage extends React.Component {
     });
   };
 
+  onTonightMode = () => {
+    // const { history, league } = this.props;
+    // if (league) {
+    //   history.push(`/tonight?game=${league}`);
+    // } else {
+    //   history.push(`/tonight?game=0`);
+    // }
+  };
+
   render() {
     const {
       league,
@@ -346,8 +355,9 @@ class HomePage extends React.Component {
       <Container className="pageContainer">
         <MainHeader
           menus={[true, true, true, true]}
-          onRun={this.onRunSimulation}
           onUpdate={this.onUpdateAlert}
+          onTonight={this.onTonightMode}
+          onRun={this.onRunSimulation}
           onAlert={this.openAlertModal}
           history={history}
           league={league}

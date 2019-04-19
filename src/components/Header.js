@@ -3,17 +3,8 @@ import { Link } from 'react-router-dom';
 import { Col, Row, ButtonToolbar, Button } from 'react-bootstrap';
 
 class Header extends React.Component {
-  onTonightMode = () => {
-    const { history, league } = this.props;
-    if (league) {
-      history.push(`/tonight?game=${league}`);
-    } else {
-      history.push(`/tonight?game=0`);
-    }
-  };
-
   render() {
-    const { onRun, onUpdate, onAlert, menus } = this.props;
+    const { onUpdate, onTonight, onRun, onAlert, menus } = this.props;
     return (
       <Row>
         <Col md={3}>
@@ -29,7 +20,7 @@ class Header extends React.Component {
               </Button>
             )}
             {menus[1] && (
-              <Button variant="link" onClick={() => this.onTonightMode()}>
+              <Button variant="link" onClick={onTonight && onTonight}>
                 Tonight Mode
               </Button>
             )}
