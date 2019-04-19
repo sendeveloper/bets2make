@@ -5,11 +5,10 @@ import { calcMaxMin } from '../utils/functions';
 
 const BASIC_CONFIG = {
   chart: {
-    height: 450,
-    type: 'spline'
+    height: 450
   },
   title: {
-    text: 'Monte Carlo'
+    text: 'Monte Carlo DD'
   },
   colors: [],
   xAxis: {
@@ -26,7 +25,20 @@ const BASIC_CONFIG = {
   },
   series: []
 };
-class MonteCarlo extends React.Component {
+
+const SERIES = [
+  {
+    showInLegend: false,
+    type: 'column'
+  },
+  {
+    showInLegend: false,
+    type: 'spline'
+  }
+];
+
+const COLORS = ['#00FF00', '#0000FF'];
+class MonteCarloDD extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,35 +56,17 @@ class MonteCarlo extends React.Component {
 
   onShowZoom = () => {
     const { zoom } = this.state;
-    const { monteLabel, monteChart, monteExtend } = this.props;
+    const { monteLabel, monteChart } = this.props;
     const config = JSON.parse(JSON.stringify(BASIC_CONFIG));
     let min = 2147483647;
     let max = -2147483648;
     // eslint-disable-next-line
-    monteChart.map(eachChart => {
+    monteChart.map((eachChart, index) => {
       const { max: maxEach, min: minEach } = calcMaxMin(eachChart);
-      const serie = {
-        showInLegend: false,
-        data: eachChart
-      };
+      const serie = Object.assign({}, SERIES[index]);
+      serie.data = eachChart;
       config.series.push(serie);
-      config.colors.push('#999999');
-      if (min > minEach) {
-        min = minEach;
-      }
-      if (max < maxEach) {
-        max = maxEach;
-      }
-    });
-    // eslint-disable-next-line
-    monteExtend.map(eachData => {
-      const { max: maxEach, min: minEach } = calcMaxMin(eachData.data);
-      const serie = {
-        showInLegend: false,
-        data: eachData.data
-      };
-      config.series.push(serie);
-      config.colors.push(eachData.color);
+      config.colors.push(COLORS[index]);
       if (min > minEach) {
         min = minEach;
       }
@@ -88,7 +82,6 @@ class MonteCarlo extends React.Component {
     config.chart.height = 500;
     config.xAxis.tickInterval = 5;
     config.yAxis.tickAmount = 10;
-
     if (!zoom) {
       return false;
     }
@@ -110,35 +103,18 @@ class MonteCarlo extends React.Component {
   };
 
   render() {
-    const { monteLabel, monteChart, monteExtend } = this.props;
+    const { monteLabel, monteChart } = this.props;
     const config = JSON.parse(JSON.stringify(BASIC_CONFIG));
     let min = 2147483647;
     let max = -2147483648;
+
     // eslint-disable-next-line
-    monteChart.map(eachChart => {
+    monteChart.map((eachChart, index) => {
       const { max: maxEach, min: minEach } = calcMaxMin(eachChart);
-      const serie = {
-        showInLegend: false,
-        data: eachChart
-      };
+      const serie = Object.assign({}, SERIES[index]);
+      serie.data = eachChart;
       config.series.push(serie);
-      config.colors.push('#999999');
-      if (min > minEach) {
-        min = minEach;
-      }
-      if (max < maxEach) {
-        max = maxEach;
-      }
-    });
-    // eslint-disable-next-line
-    monteExtend.map(eachData => {
-      const { max: maxEach, min: minEach } = calcMaxMin(eachData.data);
-      const serie = {
-        showInLegend: false,
-        data: eachData.data
-      };
-      config.series.push(serie);
-      config.colors.push(eachData.color);
+      config.colors.push(COLORS[index]);
       if (min > minEach) {
         min = minEach;
       }
@@ -166,4 +142,4 @@ class MonteCarlo extends React.Component {
   }
 }
 
-export default MonteCarlo;
+export default MonteCarloDD;

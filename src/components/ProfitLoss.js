@@ -60,6 +60,9 @@ class ProfitLoss extends React.Component {
     configZoom.xAxis.tickInterval = 5;
     configZoom.yAxis.tickAmount = 10;
 
+    if (!zoom) {
+      return false;
+    }
     return (
       <Modal show={zoom} size="lg" centered onHide={this.closeAlertModal}>
         <Modal.Header closeButton>

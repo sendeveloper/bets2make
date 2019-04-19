@@ -5,8 +5,10 @@ import ProfitLoss from '../components/ProfitLoss';
 import Drawdown from '../components/Drawdown';
 import ProfitBy from '../components/ProfitBy';
 import MonteCarlo from '../components/MonteCarlo';
+import MonteCarloDD from '../components/MonteCarloDD';
 import Winning from '../components/Winning';
 import SimulateData from '../components/SimulateData';
+import { monteDrawdown } from '../utils/functions';
 
 class GraphPage extends React.Component {
   constructor(props) {
@@ -184,7 +186,15 @@ class GraphPage extends React.Component {
         profitPercent = 0;
       }
       if (showingMonteDD) {
-        this.showMonteDDGraph(table, graph, selectedStrategyBets, 20, 500);
+        const result = this.showMonteDDGraph(
+          table,
+          graph,
+          selectedStrategyBets,
+          20,
+          500
+        );
+        monteLabel = result.labels;
+        monteChart = result.seriesToPlot;
       } else {
         const result = this.drawMonteChart(
           table,
@@ -241,13 +251,32 @@ class GraphPage extends React.Component {
     step,
     testsPerGeneration
   ) => {
-    console.log(
-      strategy,
-      graph,
-      selectedStrategyBets,
-      step,
-      testsPerGeneration
-    );
+    const seriesToPlot = [];
+    const labels = [];
+    let md = {
+      distributionPoints: [],
+      cumulativePoints: []
+    };
+    if (strategy.total_loss !== 0) {
+      md = monteDrawdown(
+        selectedStrategyBets,
+        step,
+        testsPerGeneration,
+        strategy.StrategyParameters.portfolioAmount
+      );
+    }
+    const newLine = [];
+    const newLine2 = [];
+    for (let i = 0; i < md.distributionPoints.length; i += 1) {
+      labels.push(Math.floor(md.distributionPoints[i].X * 10) / 10);
+      newLine.push(md.distributionPoints[i].Y);
+      newLine2.push(md.cumulativePoints[i].Y);
+    }
+    seriesToPlot.push(newLine, newLine2);
+    return {
+      labels,
+      seriesToPlot
+    };
   };
 
   drawMonteChart = (
@@ -399,11 +428,18 @@ class GraphPage extends React.Component {
                     Show montecardo
                   </Button>
                 )}
-                <MonteCarlo
-                  monteLabel={monteLabel}
-                  monteChart={monteChart}
-                  monteExtend={monteExtend}
-                />
+                {showingMonteDD ? (
+                  <MonteCarloDD
+                    monteLabel={monteLabel}
+                    monteChart={monteChart}
+                  />
+                ) : (
+                  <MonteCarlo
+                    monteLabel={monteLabel}
+                    monteChart={monteChart}
+                    monteExtend={monteExtend}
+                  />
+                )}
                 <Winning
                   winPercent={winPercent}
                   profitPercent={profitPercent}

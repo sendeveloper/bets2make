@@ -105,3 +105,80 @@ export const calcMaxMin = array => {
     return { max: 0, min: 0 };
   }
 };
+
+export const monteDrawdown = (values, stepNum, num, accountSize) => {
+  const drawdowns = [];
+  const cumulativePoints = [];
+  const distributionPoints = [];
+
+  for (let i = 0; i < num; i += 1) {
+    let sum = 0;
+    let maxx = 0;
+    let dd = 0;
+    let mdd = 0;
+    for (let j = 0; j < values.length; j += 1) {
+      sum += values[Math.floor(Math.random() * values.length)];
+      if (sum > maxx) {
+        maxx = sum;
+      }
+      dd = maxx - sum;
+      if (dd > mdd) {
+        mdd = dd;
+      }
+    }
+    const thisdd = (mdd * 100.0) / accountSize;
+    drawdowns.push(thisdd);
+  }
+
+  let max = 0;
+  let min = 10000000;
+
+  for (let i = 0; i < drawdowns.length; i += 1) {
+    if (drawdowns[i] > max) {
+      max = drawdowns[i];
+    }
+    if (drawdowns[i] < min) {
+      min = drawdowns[i];
+    }
+  }
+
+  let step = (max - min) / stepNum;
+  if (step === 0) {
+    step = 0.1;
+  }
+  const Bins = [];
+  for (let j = min; j <= max; j += step) {
+    // bin bObj = new bin();
+    const bObj = {
+      count: 0,
+      value: j
+    };
+    Bins.push(bObj);
+  }
+
+  for (let k = 0; k < drawdowns.length; k += 1) {
+    for (let l = 1; l < Bins.length; l += 1) {
+      if (
+        (drawdowns[k] <= Bins[l].value && drawdowns[k] > Bins[l - 1].value) ||
+        (l === 1 && drawdowns[k] <= Bins[l - 1].value) ||
+        (l === Bins.length - 1 && drawdowns[k] > Bins[l].value)
+      ) {
+        Bins[l - 1].count += 1;
+      }
+    }
+  }
+
+  let counter = 0;
+  for (let i = 0; i < Bins.length; i += 1) {
+    counter += Bins[i].count;
+    Bins[i].cdf = (counter * 100.0) / num;
+  }
+  for (let i = 0; i < Bins.length; i += 1) {
+    distributionPoints.push({ X: Bins[i].value, Y: Bins[i].count });
+    cumulativePoints.push({ X: Bins[i].value, Y: Bins[i].cdf });
+  }
+  return {
+    distributionPoints,
+    cumulativePoints
+  };
+};
