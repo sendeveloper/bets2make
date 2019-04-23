@@ -78,3 +78,19 @@ export function getSimulationGraphData(strategyId, callback) {
       }
     );
 }
+
+export function getTonightData(strategyId, callback) {
+  const url = API_URL.tonight;
+  const parameter = `leaguetype/${strategyId}`;
+  // eslint-disable-next-line
+  fetch(url + parameter)
+    .then(res => res.json())
+    .then(
+      result => {
+        return callback(result);
+      },
+      error => {
+        console.log('error', error);
+      }
+    );
+}

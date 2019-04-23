@@ -30,6 +30,7 @@ import {
   // FILE_NAMES
 } from '../utils/constants';
 import { loopTreeData, initialStrategyParameters } from '../utils/functions';
+import { getTonightData } from '../utils/api';
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -331,12 +332,28 @@ class HomePage extends React.Component {
   };
 
   onTonightMode = () => {
-    // const { history, league } = this.props;
-    // if (league) {
-    //   history.push(`/tonight?game=${league}`);
-    // } else {
-    //   history.push(`/tonight?game=0`);
-    // }
+    const { history } = this.props;
+    const { league } = this.state;
+    if (league >= 0) {
+      getTonightData(league, result => {
+        let tableData;
+        if (result) {
+          tableData = result.gdata;
+          if (tableData.length === 0) {
+            alert(result.msg);
+          } else {
+            history.push({
+              pathname: `/tonight/${league}`,
+              state: tableData
+            });
+          }
+        } else {
+          alert("Sorry, you don't have enough permission to visit this page");
+        }
+      });
+    } else {
+      alert("Sorry, you don't have enough permission to visit this page");
+    }
   };
 
   render() {

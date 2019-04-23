@@ -20,7 +20,7 @@ class App extends React.Component {
           <Route exact path="/run-simulation" component={RunSimulation} />
           <Route exact path="/portfolio" component={Portfolio} />
           <Route exact path="/update-alerts" component={UpdateAlerts} />
-          <Route exact path="/tonight" component={TonightGamePage} />
+          <Route exact path="/tonight/:league" component={TonightGamePage} />
           <Route path="/fuel-savings" component={FuelSavingsPage} />
           <Route path="/about" component={AboutPage} />
           <Route component={NotFoundPage} />
